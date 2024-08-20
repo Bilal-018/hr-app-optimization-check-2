@@ -91,6 +91,12 @@ interface ContractType {
   id: number,
   contractType: string
 }
+
+interface ContractTypeData {
+  contractTypeId: number,
+  contractType: string
+}
+
 const textFieldStyles = {
   '& .MuiOutlinedInput-root': {
     borderRadius: '10px',
@@ -155,7 +161,7 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
 
   const onSave = () => {
     const errors: ValidationErrors = validate(leaveInfo);
-    if (Object.values(errors).some((item: any) => item)) {
+    if (Object.values(errors).some((item: boolean) => item)) {
       setErrors(errors);
       return;
     }
@@ -182,7 +188,7 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
     jwtInterceoptor
       .get('api/GenderMaster/GetAllGenderMasters')
       .then((res: any) => {
-        setGenders(res.data);
+        setGenders(res.data as Gender[]);
       })
       .catch((err: any) => {
         showMessage(err.response.data.Message, 'error');
@@ -194,7 +200,7 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
     jwtLeave
       .get('api/LeaveConfiguration/GetLeaveCategories')
       .then((res: any) => {
-        setLeaveCategory(res.data);
+        setLeaveCategory(res.data as Category[]);
       })
       .catch((err: any) => {
         showMessage(err.response.data.Message, 'error');
@@ -206,7 +212,7 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
       .get('api/ContractTypeMasters/GetAllContractType')
       .then((res: any) => {
         setContracts(
-          res.data.map((contract: any) => ({
+          res.data.map((contract: ContractTypeData) => ({
             id: contract.contractTypeId,
             contractType: contract.contractType,
           }))
@@ -257,7 +263,7 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
 
   return (
     <BaseModal
-      title={leave !== undefined ? 'Admin - Update leave' : 'Admin - New leave'}
+      title={leave ? 'Admin - Update leave' : 'Admin - New leave'}
       handleClose={() => { handleClose(); setLeaveInfo(initialState); setErrors({ leaveType: false, daysEntitled: false, genderRestriction: false, leaveCategory: false }); setSelectedItems([]); setSecondBoxItems([]); }}
       onSave={onSave}
       open={open}
