@@ -6,10 +6,20 @@ import dayjs from 'dayjs';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { useTranslation } from 'react-i18next';
 
+interface AssetInfo {
+  assetConfigurationId: number;
+  equipment: string;
+  brand: string;
+  model: string;
+  registration: string;
+  expiryDate: string;
+  isActive?: boolean;
+}
+
 interface AddNewAssetProps {
   open: boolean;
   handleClose: () => void;
-  handleSave: (assetInfo: any) => void;
+  handleSave: (assetInfo: AssetInfo) => void;
   asset?: any;
 }
 
@@ -21,7 +31,7 @@ const initialState = {
   registration: '',
   expiryDate: '',
 };
-const validate = (values: any) => {
+const validate = (values: AssetInfo) => {
   let errors = {
     equipment: false,
     brand: false,
@@ -32,7 +42,7 @@ const validate = (values: any) => {
   if (!values.equipment || values.equipment.trim() === '') {
     errors.equipment = true;
   }
-  if (!values.brand || values.brand === 0) {
+  if (!values.brand || values.brand.trim() === '') {
     errors.brand = true;
   }
 
@@ -54,16 +64,6 @@ const AddNewAsset: React.FC<AddNewAssetProps> = ({
   handleSave,
   asset,
 }) => {
-
-  interface AssetInfo {
-    assetConfigurationId: number;
-    equipment: string;
-    brand: string;
-    model: string;
-    registration: string;
-    expiryDate: string;
-    isActive?: boolean;
-  }
 
   const [assetInfo, setAssetInfo] = useState<AssetInfo>(initialState);
   const [errors, setErrors] = useState<Record<string, boolean>>({
