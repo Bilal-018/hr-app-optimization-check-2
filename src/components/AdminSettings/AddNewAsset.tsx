@@ -181,7 +181,7 @@ const AddNewAsset: React.FC<AddNewAssetProps> = ({
             <DatePicker
               name='expiryDate'
               defaultValue={assetInfo.expiryDate}
-              value={dayjs(assetInfo.expiryDate) ?? (null as unknown as Dayjs)}
+              value={dayjs(assetInfo.expiryDate) as Dayjs}
               format='DD/MM/YYYY'
               onChange={(newValue: any) => {
                 if (newValue instanceof Date) {
