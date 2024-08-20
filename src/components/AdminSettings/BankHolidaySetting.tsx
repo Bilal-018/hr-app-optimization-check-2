@@ -113,10 +113,6 @@ const BankHolidaySetting: React.FC = () => {
     if (!values.country || values.country === '') {
       errors.country = true;
     }
-
-    if (!values.date) {
-      errors.date = true;
-    }
     return errors;
   };
 
@@ -385,7 +381,7 @@ const BankHolidaySetting: React.FC = () => {
             holidayName: false,
           });
         }}
-        onSave={() => onSave()}
+        onSave={() => void onSave()}
         open={open.open}
         bankHoliday={holidayConfig.find(
           (item: HolidayConfig) => item.publicHolidayId === open.id
