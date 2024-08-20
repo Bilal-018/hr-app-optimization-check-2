@@ -29,7 +29,7 @@ let initialErrors: ValidationErrors = {
   skillType: false,
   achievementScore: false,
 };
-const validate = (values: any) => {
+const validate = (values: SkillDetails) => {
   let errors: ValidationErrors = { ...initialErrors };
 
   if (!values.skill || values.skill.trim() === '') {
@@ -62,9 +62,9 @@ interface SkillType {
 interface AddNewSkillProps {
   open: boolean;
   handleClose: () => void;
-  handleSave: (skillDetails: any) => void;
+  handleSave: (skillDetails: SkillDetails) => void;
   skillAchievementList: SkillAchievement[];
-  skill: any;
+  skill: () => SkillDetails;
   skillTypes: SkillType[];
 }
 
@@ -139,7 +139,7 @@ const AddNewSkill = ({
             <Select
               placeholder={t('Select skill type')}
               value={skillTypes.find((item: SkillType) => {
-                return item?.skillType?.toLowerCase() === skillDetails.skillType?.toLowerCase();
+                return item.skillType?.toLowerCase() === skillDetails.skillType?.toLowerCase();
               })?.skillType ?? ''}
               onChange={handleChange}
               name='skillType'
