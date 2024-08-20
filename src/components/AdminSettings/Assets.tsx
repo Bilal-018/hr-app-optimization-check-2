@@ -1,5 +1,5 @@
 /* eslint-disable eqeqeq */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import EnhancedTable from '../Global/Table';
 import { Box, Button, alpha } from '@mui/material';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
@@ -44,8 +44,8 @@ function createData(
   registration: string | null | undefined,
   expiryDate: string | null | undefined,
   id: number,
-  onEdit: any,
-  onDelete: any
+  onEdit: (id: number) => void,
+  onDelete: (id: number) => void
 ) {
   return {
     equipment,
@@ -153,7 +153,7 @@ const Assets: React.FC = () => {
     jwtInterceoptor
       .get('api/HrAsset/GetAllAssetConfigurationList')
       .then((res: any) => {
-        setAssetConfig(res.data);
+        setAssetConfig(res.data as AssetConfig[]);
         setLoading(false);
       })
       .catch((err: any) => {
@@ -161,7 +161,7 @@ const Assets: React.FC = () => {
       });
   };
 
-  const updateAssetConfig = (data: any) => {
+  const updateAssetConfig = (data: AssetConfig) => {
     setLoading(true);
 
     jwtInterceoptor
@@ -175,7 +175,7 @@ const Assets: React.FC = () => {
       });
   };
 
-  const createNewAssetConfig = (data: any) => {
+  const createNewAssetConfig = (data: AssetConfig) => {
     setLoading(true);
     jwtInterceoptor
       .post('api/HrAsset/CreateAssetConfiguration', data)
@@ -188,7 +188,7 @@ const Assets: React.FC = () => {
       });
   };
 
-  const deleteLeaveConfig = (id: any) => {
+  const deleteLeaveConfig = (id: number | null) => {
     setLoading(true);
 
     jwtInterceoptor
@@ -241,7 +241,7 @@ const Assets: React.FC = () => {
     });
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     getAssetConfig();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -260,12 +260,10 @@ const Assets: React.FC = () => {
             item.equipment,
             item.brand,
             item.model,
-            item.registration != null &&
-              item.registration != '' &&
-              item.registration != 'string'
-              ? dayjs(item.registration).format('DD/MM/YYYY')
+            item.registration != null
+              ? item.registration
               : '',
-            dayjs(item.expiryDate).format('DD/MM/YYYY'),
+            dayjs(item.expiryDate as string).format('DD/MM/YYYY'),
             item.assetConfigurationId,
             onEdit,
             onDelete
