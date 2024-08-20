@@ -143,11 +143,13 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (((name === 'daysEntitled' && value.trim() !== '') || name === 'leaveCategoryId')) {
-      const numericValue = parseInt(value, 10);
-      setLeaveInfo((pre: LeaveTypeState) => ({ ...pre, [name]: numericValue }));
-    } else {
-      setLeaveInfo((pre: LeaveTypeState) => ({ ...pre, [name]: value }));
+    if (typeof value === 'string') {
+      if (((name === 'daysEntitled' && value.trim() !== '') || name === 'leaveCategoryId')) {
+        const numericValue = parseInt(value, 10);
+        setLeaveInfo((pre: LeaveTypeState) => ({ ...pre, [name]: numericValue }));
+      } else {
+        setLeaveInfo((pre: LeaveTypeState) => ({ ...pre, [name]: value }));
+      }
     }
   };
 
