@@ -120,7 +120,7 @@ const AddNewAsset: React.FC<AddNewAssetProps> = ({
       title='Add new asset'
       handleClose={handleClose as () => void}
       onSave={onSave}
-      open={open}
+      open={open as boolean}
     >
       <Grid container spacing={2}>
         <Grid item xs={12} sm={5.75}>
