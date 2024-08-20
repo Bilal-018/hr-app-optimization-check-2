@@ -263,7 +263,7 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
 
   return (
     <BaseModal
-      title={leave ? 'Admin - Update leave' : 'Admin - New leave'}
+      title={leave !== undefined ? 'Admin - Update leave' : 'Admin - New leave'}
       handleClose={() => { handleClose(); setLeaveInfo(initialState); setErrors({ leaveType: false, daysEntitled: false, genderRestriction: false, leaveCategory: false }); setSelectedItems([]); setSecondBoxItems([]); }}
       onSave={onSave}
       open={open}
