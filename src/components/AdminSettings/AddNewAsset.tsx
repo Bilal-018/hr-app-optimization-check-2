@@ -23,7 +23,7 @@ interface AddNewAssetProps {
   asset?: AssetInfo;
 }
 
-const initialState = {
+const initialState: AssetInfo = {
   assetConfigurationId: 0,
   equipment: '',
   brand: '',
@@ -31,6 +31,7 @@ const initialState = {
   registration: '',
   expiryDate: '',
 };
+
 const validate = (values: AssetInfo) => {
   let errors = {
     equipment: false,
