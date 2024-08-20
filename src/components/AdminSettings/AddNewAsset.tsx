@@ -23,7 +23,7 @@ interface AddNewAssetProps {
   asset?: AssetInfo;
 }
 
-const initialState: AssetInfo = {
+const initialState = {
   assetConfigurationId: 0,
   equipment: '',
   brand: '',
