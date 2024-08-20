@@ -101,7 +101,7 @@ const BankHolidaySetting: React.FC = () => {
     }
   };
 
-  const validate = (values: any) => {
+  const validate = (values: HolidayState) => {
     let errors = {
       date: false,
       country: false,
@@ -160,17 +160,17 @@ const BankHolidaySetting: React.FC = () => {
       .get('api/PublicHoliday/GetAllPublicHolidays')
       .then((res: any) => {
         console.log(res.data);
-        setBankHolidayConfig(res.data);
+        setBankHolidayConfig(res.data as HolidayConfig[]);
         setLoading(false);
       })
       .catch((err: any) => { console.log("error is: ", err) });
   };
 
-  const addOrUpdateBankHoliday: any = async (
+  const addOrUpdateBankHoliday = async (
     date: Date,
     holidayName: string,
     country: string,
-    publicHolidayId: number
+    publicHolidayId?: number
   ) => {
     setLoading(true);
     try {
@@ -250,12 +250,12 @@ const BankHolidaySetting: React.FC = () => {
 
   function createData(
     Date: string,
-    Description: any,
-    Country: any,
-    id: any,
-    onEdit: any,
-    onDelete: any,
-    rowData: any
+    Description: string,
+    Country: string,
+    id: number,
+    onEdit: (rowData: HolidayConfig) => void,
+    onDelete: (id: number) => void,
+    rowData: HolidayConfig
   ) {
 
     // Combine all text for searchable text
@@ -273,21 +273,29 @@ const BankHolidaySetting: React.FC = () => {
         <CellAction
           onEdit={() => onEdit(rowData)}
           onDelete={() => onDelete(id)}
+          rowData={rowData}
         />
       ),
       searchableText,
     };
   }
-  function CellAction({ onEdit, id, onDelete }: any) {
+
+  interface CellActionProps {
+    onEdit: (rowData: HolidayConfig) => void;
+    onDelete: (id: number) => void;
+    rowData: HolidayConfig;
+  }
+
+  function CellAction({ onEdit, onDelete, rowData }: CellActionProps) {
     return (
       <Box className='action-icon-rounded'>
         <Button
-          onClick={() => onEdit(id)}
+          onClick={() => onEdit(rowData)}
         >
           <EditIcon />
         </Button>
         <Button
-          onClick={() => onDelete(id)}
+          onClick={() => onDelete(rowData.publicHolidayId)}
         >
           <BinIcon />
         </Button>
@@ -331,7 +339,7 @@ const BankHolidaySetting: React.FC = () => {
     >
       <EnhancedTable
         head={headCells}
-        rows={holidayConfig.map((item: any) =>
+        rows={holidayConfig.map((item: HolidayConfig) =>
           createData(
             new Date(item.date).toLocaleDateString('en-GB'),
             item.holidayName,
