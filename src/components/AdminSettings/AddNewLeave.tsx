@@ -71,7 +71,7 @@ const validate = (values: LeaveTypeState) => {
 interface AddNewLeaveProps {
   open: boolean;
   handleClose: () => void;
-  handleSave: (leaveInfo: any) => void;
+  handleSave: (leaveInfo: LeaveTypeState) => void;
   leave: LeaveTypeState;
   loading: boolean;
 }
@@ -143,11 +143,9 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if ((name === 'daysEntitled' || name === 'leaveCategoryId') && value.trim() !== '') {
-      if (/^\d+$/.test(value)) {
-        const numericValue = parseInt(value, 10);
-        setLeaveInfo((pre: LeaveTypeState) => ({ ...pre, [name]: numericValue }));
-      }
+    if (((name === 'daysEntitled' && value.trim() !== '') || name === 'leaveCategoryId')) {
+      const numericValue = parseInt(value, 10);
+      setLeaveInfo((pre: LeaveTypeState) => ({ ...pre, [name]: numericValue }));
     } else {
       setLeaveInfo((pre: LeaveTypeState) => ({ ...pre, [name]: value }));
     }
