@@ -3,16 +3,10 @@ import BaseModal from '../Global/Modal';
 import { Box, TextField, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-// interface Department {
-//   department: any;
-//   costCenter: any;
-//   id: any | null;
-// }
-
 interface Props {
   open: boolean;
   handleClose: () => void;
-  handleSave: (department: any) => void;
+  handleSave: (department: DepartmentState) => void;
   department: DepartmentState;
   title: string;
 }
