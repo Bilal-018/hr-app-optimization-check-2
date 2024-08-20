@@ -138,7 +138,7 @@ const Assets: React.FC = () => {
     model: string;
     registration: string | null;
     expiryDate: string;
-    isActive: boolean;
+    isActive?: boolean;
   }
 
   const [loading, setLoading] = useState<boolean>(false);

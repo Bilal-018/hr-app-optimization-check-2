@@ -11,7 +11,7 @@ interface AssetInfo {
   equipment: string;
   brand: string;
   model: string;
-  registration: string;
+  registration: string | null;
   expiryDate: string;
   isActive?: boolean;
 }
@@ -20,7 +20,7 @@ interface AddNewAssetProps {
   open: boolean;
   handleClose: () => void;
   handleSave: (assetInfo: AssetInfo) => void;
-  asset?: any;
+  asset?: AssetInfo;
 }
 
 const initialState = {
@@ -94,7 +94,7 @@ const AddNewAsset: React.FC<AddNewAssetProps> = ({
 
   const onSave = () => {
     const errors = validate(assetInfo);
-    if (Object.values(errors).some((item: any) => item)) {
+    if (Object.values(errors).some((item: boolean) => item)) {
       setErrors(errors);
       return;
     }
