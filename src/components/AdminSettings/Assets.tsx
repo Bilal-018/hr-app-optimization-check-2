@@ -131,7 +131,7 @@ const Assets: React.FC = () => {
     id: number | null;
   }
 
-  interface AssetInfo {
+  interface AssetConfig {
     assetConfigurationId: number;
     equipment: string;
     brand: string;
@@ -143,7 +143,7 @@ const Assets: React.FC = () => {
 
   const [loading, setLoading] = useState<boolean>(false);
   const { showMessage }: any = useSnackbar();
-  const [assetConfig, setAssetConfig] = useState<AssetInfo[]>([]);
+  const [assetConfig, setAssetConfig] = useState<AssetConfig[]>([]);
   const [deleteModal, setDeleteModal] = useState<DeleteModalState>({
     open: false,
     id: null,
@@ -226,11 +226,11 @@ const Assets: React.FC = () => {
     deleteLeaveConfig(deleteModal.id);
   };
 
-  const onSave = (assetInfo: AssetInfo) => {
-    if (assetInfo.assetConfigurationId) {
-      updateAssetConfig(assetInfo);
+  const onSave = (data: AssetConfig) => {
+    if (data.assetConfigurationId) {
+      updateAssetConfig(data);
     } else {
-      createNewAssetConfig(assetInfo);
+      createNewAssetConfig(data);
     }
 
     getAssetConfig();
@@ -255,7 +255,7 @@ const Assets: React.FC = () => {
     >
       <EnhancedTable
         head={headCells}
-        rows={assetConfig.map((item: AssetInfo) =>
+        rows={assetConfig.map((item: AssetConfig) =>
           createData(
             item.equipment,
             item.brand,
@@ -291,7 +291,7 @@ const Assets: React.FC = () => {
         }}
         handleSave={onSave}
         asset={assetConfig.find(
-          (item: AssetInfo) => item.assetConfigurationId === open.id
+          (item: AssetConfig) => item.assetConfigurationId === open.id
         )}
       />
 
