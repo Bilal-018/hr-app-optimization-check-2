@@ -143,7 +143,7 @@ const BankHolidaySetting: React.FC = () => {
     publicHolidayId: number;
     holidayType: null | string;
     holidayName: string;
-    date: string;
+    date: Date;
     country: string;
   }
 
@@ -271,8 +271,8 @@ const BankHolidaySetting: React.FC = () => {
       Country,
       Action: (
         <CellAction
-          onEdit={() => onEdit(rowData)}
-          onDelete={() => onDelete(id)}
+          onEdit={() => { onEdit(rowData) }}
+          onDelete={() => { onDelete(id) }}
           rowData={rowData}
         />
       ),
@@ -290,12 +290,12 @@ const BankHolidaySetting: React.FC = () => {
     return (
       <Box className='action-icon-rounded'>
         <Button
-          onClick={() => onEdit(rowData)}
+          onClick={() => { onEdit(rowData) }}
         >
           <EditIcon />
         </Button>
         <Button
-          onClick={() => onDelete(rowData.publicHolidayId)}
+          onClick={() => { onDelete(rowData.publicHolidayId) }}
         >
           <BinIcon />
         </Button>
@@ -304,7 +304,7 @@ const BankHolidaySetting: React.FC = () => {
   }
 
 
-  const onEdit = (rowData: any) => {
+  const onEdit = (rowData: HolidayConfig) => {
     setOpen({
       open: true,
       id: rowData.publicHolidayId,
@@ -317,14 +317,19 @@ const BankHolidaySetting: React.FC = () => {
     });
   };
 
-  const onDelete = (id: any) => {
+  const onDelete = (id: number | null) => {
     setDeleteModal({
       open: true,
       id: id,
     });
   };
 
-  const [deleteModal, setDeleteModal] = useState({
+  interface DeleteModalState {
+    open: boolean;
+    id: number | null;
+  }
+
+  const [deleteModal, setDeleteModal] = useState<DeleteModalState>({
     open: false,
     id: null,
   });
@@ -351,12 +356,12 @@ const BankHolidaySetting: React.FC = () => {
           )
         )}
         isAddable={true}
-        onAddClick={() =>
+        onAddClick={() => {
           setOpen({
             open: true,
             id: null,
           })
-        }
+        }}
         title='Bank holiday setting'
         loading={loading}
         btnTitle='Edit'
@@ -380,10 +385,10 @@ const BankHolidaySetting: React.FC = () => {
             holidayName: false,
           });
         }}
-        onSave={onSave}
+        onSave={() => onSave()}
         open={open.open}
         bankHoliday={holidayConfig.find(
-          (item: any) => item.publicHolidayId === open.id
+          (item: HolidayConfig) => item.publicHolidayId === open.id
         )}
       >
         <Grid container spacing={2}>
