@@ -239,7 +239,7 @@ function EmployeeSkillsTable() {
       .delete(url)
       .then((response) => {
         showMessage(response.data, 'success');
-        GetLeavesListData();
+        void GetLeavesListData();
       })
       .catch((err) => {
         showMessage(err.message, 'error');
@@ -425,7 +425,7 @@ function EmployeeSkillsTable() {
       .then((response) => {
         setOpen(false);
         showMessage(response.data, 'success');
-        GetLeavesListData();
+        void GetLeavesListData();
       })
       .catch((err) => {
         showMessage(err.message, 'error');
