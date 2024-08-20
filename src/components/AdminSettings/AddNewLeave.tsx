@@ -26,8 +26,8 @@ interface LeaveTypeState {
   daysEntitled: number;
   genderRestriction: string;
   leaveCategoryId: number | null;
-  contractTypeId: any;
-  genderRestrictionId: any,
+  contractTypeId: number[];
+  genderRestrictionId: number[],
 }
 
 const initialState: LeaveTypeState = {
@@ -121,8 +121,8 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
   const [genders, setGenders] = useState<Gender[]>([]);
   const [leaveCategory, setLeaveCategory] = useState<Category[]>([]);
   const [contracts, setContracts] = useState<ContractType[]>([]);
-  const [selectedItems, setSelectedItems] = useState<any>([]);
-  const [secondBoxItems, setSecondBoxItems] = useState<any>([]);
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [secondBoxItems, setSecondBoxItems] = useState<number[]>([]);
   const [allSelected, setAllSelected] = useState<boolean>(false);
   const [leaveInfo, setLeaveInfo] = useState<LeaveTypeState>(initialState);
   const [errors, setErrors] = useState<ValidationErrors>({
