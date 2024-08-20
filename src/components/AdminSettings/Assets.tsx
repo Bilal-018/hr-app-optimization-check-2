@@ -226,11 +226,11 @@ const Assets: React.FC = () => {
     deleteLeaveConfig(deleteModal.id);
   };
 
-  const onSave = (assetInfo: AssetConfig) => {
-    if (assetInfo.assetConfigurationId) {
-      updateAssetConfig(assetInfo);
+  const onSave = (data: AssetConfig) => {
+    if (data.assetConfigurationId) {
+      updateAssetConfig(data);
     } else {
-      createNewAssetConfig(assetInfo);
+      createNewAssetConfig(data);
     }
 
     getAssetConfig();
@@ -291,7 +291,7 @@ const Assets: React.FC = () => {
         }}
         handleSave={onSave}
         asset={assetConfig.find(
-          (item: any) => item.assetConfigurationId === open.id
+          (item: AssetConfig) => item.assetConfigurationId === open.id
         )}
       />
 
