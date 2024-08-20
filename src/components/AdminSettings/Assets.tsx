@@ -54,7 +54,7 @@ function createData(
     registration,
     expiryDate,
     Action: (
-      <CellAction onEdit={() => onEdit(id)} onDelete={() => onDelete(id)} />
+      <CellAction onEdit={() => { onEdit(id); }} onDelete={() => { onDelete(id); }} />
     ),
   };
 }
@@ -243,7 +243,6 @@ const Assets: React.FC = () => {
 
   useEffect(() => {
     getAssetConfig();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -260,9 +259,7 @@ const Assets: React.FC = () => {
             item.equipment,
             item.brand,
             item.model,
-            item.registration != null
-              ? item.registration
-              : '',
+            item.registration ?? '',
             dayjs(item.expiryDate as string).format('DD/MM/YYYY'),
             item.assetConfigurationId,
             onEdit,
