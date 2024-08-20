@@ -139,7 +139,7 @@ const AddNewSkill = ({
             <Select
               placeholder={t('Select skill type')}
               value={skillTypes.find((item: SkillType) => {
-                return item.skillType?.toLowerCase() === skillDetails.skillType?.toLowerCase();
+                return item.skillType.toLowerCase() === skillDetails.skillType?.toLowerCase();
               })?.skillType ?? ''}
               onChange={handleChange}
               name='skillType'
