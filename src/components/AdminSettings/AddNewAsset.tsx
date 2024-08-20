@@ -81,7 +81,9 @@ const AddNewAsset: React.FC<AddNewAssetProps> = ({
   }, [asset]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target as { name: string; value: string | number };
+    const target = e.target as HTMLInputElement;
+    const { name, value } = target;
+    // const { name, value } = e.target as { name: string; value: string | number };
     setAssetInfo((pre: AssetInfo) => {
       if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
         return { ...pre, [name]: value };
