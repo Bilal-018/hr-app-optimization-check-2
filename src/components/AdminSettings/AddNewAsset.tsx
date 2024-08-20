@@ -76,7 +76,7 @@ const AddNewAsset: React.FC<AddNewAssetProps> = ({
 
   useEffect(() => {
     if (asset) {
-      setAssetInfo(asset);
+      setAssetInfo(asset as AssetInfo);
     }
   }, [asset]);
 
