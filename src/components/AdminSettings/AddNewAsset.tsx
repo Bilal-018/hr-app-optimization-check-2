@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import BaseModal from '../Global/Modal';
 import { Grid, TextField, Typography } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { useTranslation } from 'react-i18next';
 
@@ -180,10 +180,10 @@ const AddNewAsset: React.FC<AddNewAssetProps> = ({
           >
             <DatePicker
               name='expiryDate'
-              defaultValue={dayjs(assetInfo.expiryDate).toDate()}
-              value={dayjs(assetInfo.expiryDate).toDate()}
+              defaultValue={assetInfo.expiryDate}
+              value={dayjs(assetInfo.expiryDate) as Dayjs}
               format='DD/MM/YYYY'
-              onChange={(newValue: Date | null) => {
+              onChange={(newValue: any) => {
                 if (newValue instanceof Date) {
                   setAssetInfo((pre: AssetInfo) => ({
                     ...pre,
