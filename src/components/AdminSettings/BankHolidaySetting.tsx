@@ -15,6 +15,7 @@ import { useSnackbar } from '../Global/WithSnackbar';
 import DeleteModal from '../Global/DeleteModal';
 import EditIcon from '../Icon/EditIcon';
 import BinIcon from '../Icon/BinIcon';
+import { AxiosResponse } from 'axios';
 
 interface HolidayState {
   country: string;
@@ -55,7 +56,12 @@ const BankHolidaySetting: React.FC = () => {
     holidayName: false,
   });
 
-  const { showMessage }: any = useSnackbar();
+  interface Snackbar {
+    // eslint-disable-next-line
+    showMessage: (message: string, variant: 'error' | 'success' | 'info' | 'warning') => void;
+  }
+
+  const { showMessage }: Snackbar = useSnackbar() as Snackbar;
 
   const [bankHolidayInfo, setBankHolidayInfo] = useState<HolidayState>(initialState);
 
@@ -152,14 +158,14 @@ const BankHolidaySetting: React.FC = () => {
 
   const getBankHolidayConfig = () => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceoptor
       .get('api/PublicHoliday/GetAllPublicHolidays')
-      .then((res: any) => {
-        console.log(res.data);
-        setBankHolidayConfig(res.data as HolidayConfig[]);
+      .then((res: AxiosResponse<HolidayConfig[]>) => {
+        setBankHolidayConfig(res.data);
         setLoading(false);
       })
-      .catch((err: any) => { console.log("error is: ", err) });
+      .catch((err: unknown) => { console.log("error is: ", err) });
   };
 
   const addOrUpdateBankHoliday = async (
@@ -171,6 +177,7 @@ const BankHolidaySetting: React.FC = () => {
     setLoading(true);
     try {
       if (publicHolidayId) {
+        // eslint-disable-next-line
         await jwtInterceoptor
           .post('api/PublicHoliday/UpdatePublicHoliday', {
             publicHolidayId,
@@ -178,7 +185,7 @@ const BankHolidaySetting: React.FC = () => {
             holidayName,
             country,
           })
-          .then((res: any) => {
+          .then((res: AxiosResponse) => {
             if (
               res.data.StatusCode != undefined &&
               res.data.StatusCode !== '200'
@@ -195,7 +202,7 @@ const BankHolidaySetting: React.FC = () => {
             holidayName,
             country,
           })
-          .then((res: any) => {
+          .then((res: AxiosResponse) => {
             if (
               res.data.StatusCode != undefined &&
               res.data.StatusCode !== '200'
@@ -218,11 +225,12 @@ const BankHolidaySetting: React.FC = () => {
   const handleConfirmDelete = async () => {
     try {
       setLoading(true);
+      // eslint-disable-next-line
       await jwtInterceoptor
         .delete(
           `api/PublicHoliday/DeletePublicHoliday?PublicHolidayId=${deleteModal.id}`
         )
-        .then((res: any) => {
+        .then((res: AxiosResponse) => {
           if (
             res.data.StatusCode != undefined &&
             res.data.StatusCode !== '200'
@@ -249,7 +257,9 @@ const BankHolidaySetting: React.FC = () => {
     Description: string,
     Country: string,
     id: number,
+    // eslint-disable-next-line
     onEdit: (rowData: HolidayConfig) => void,
+    // eslint-disable-next-line
     onDelete: (id: number) => void,
     rowData: HolidayConfig
   ) {
@@ -277,7 +287,9 @@ const BankHolidaySetting: React.FC = () => {
   }
 
   interface CellActionProps {
+    // eslint-disable-next-line
     onEdit: (rowData: HolidayConfig) => void;
+    // eslint-disable-next-line
     onDelete: (id: number) => void;
     rowData: HolidayConfig;
   }
