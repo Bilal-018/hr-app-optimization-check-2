@@ -181,6 +181,7 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
   };
 
   interface Snackbar {
+    // eslint-disable-next-line
     showMessage: (message: string, variant: 'error' | 'success' | 'info' | 'warning') => void;
   }
 
@@ -198,9 +199,9 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
       .catch((error: unknown) => {
         if (error instanceof AxiosError && error.response) {
           const errorMessage = error.response.data as { Message: string };
-          showMessage(errorMessage.Message as string, 'error');
+          showMessage(errorMessage.Message, 'error');
         } else if (error instanceof Error) {
-          showMessage(error.message as string, 'error');
+          showMessage(error.message, 'error');
         } else {
           showMessage('An unknown error occurred', 'error');
         }
