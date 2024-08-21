@@ -1,10 +1,10 @@
 /* eslint-disable eqeqeq */
-import axios from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 const API_URL = process.env.REACT_APP_API_PROFILE_SERVICE_URL;
 const API_URL2 = process.env.REACT_APP_API_LEAVE_SERVICE_URL;
 //console.log("API_URL: "+API_URL);
-const jwtInterceoptor: any = axios.create({
+const jwtInterceoptor: AxiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'text/json;charset=utf-8',
@@ -14,24 +14,24 @@ const jwtInterceoptor: any = axios.create({
   },
 });
 
-jwtInterceoptor.interceptors.request.use((config: any) => {
-  let tokensData: any = sessionStorage.getItem('token');
+jwtInterceoptor.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  let tokensData: string | null = sessionStorage.getItem('token');
   if (tokensData !== null) {
-    tokensData = JSON.parse(tokensData);
-    config.headers.Authorization = 'Bearer ' + tokensData.token;
+    const parsedTokensData: { token: string } = JSON.parse(tokensData);
+    config.headers.Authorization = 'Bearer ' + parsedTokensData.token;
   }
   return config;
 });
 
 jwtInterceoptor.interceptors.response.use(
-  (response: any) => {
+  (response: AxiosResponse) => {
     return response;
   },
-  async (error: any) => {
-    if (error.response.status === 401) {
-      const authData: any = sessionStorage.getItem('token');
+  async (error: AxiosError) => {
+    if (error.response?.status === 401) {
+      const authData: string | null = sessionStorage.getItem('token');
       if (authData !== null) {
-        const parsedAuthData = JSON.parse(authData);
+        const parsedAuthData: { employeedetail: { email: string }, refreshToken: string } = JSON.parse(authData);
         const payload = {
           email: parsedAuthData.employeedetail.email,
           refreshToken: parsedAuthData.refreshToken,
@@ -44,8 +44,12 @@ jwtInterceoptor.interceptors.response.use(
         if (apiResponse.data.status && apiResponse.data.status != 'Error')
           sessionStorage.setItem('token', JSON.stringify(apiResponse.data));
 
-        error.config.headers.Authorization = 'Bearer ' + apiResponse.data.token;
-        return axios(error.config);
+        if (error.config) {
+          error.config.headers.Authorization = 'Bearer ' + apiResponse.data.token;
+          return axios(error.config);
+        } else {
+          return Promise.reject(new Error('Error', { cause: error }));
+        }
       }
     } else {
       return Promise.reject(new Error('Error', { cause: error }));
