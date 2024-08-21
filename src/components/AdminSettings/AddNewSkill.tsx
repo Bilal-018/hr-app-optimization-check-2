@@ -62,6 +62,7 @@ interface SkillType {
 interface AddNewSkillProps {
   open: boolean;
   handleClose: () => void;
+  // eslint-disable-next-line
   handleSave: (skillDetails: SkillDetails) => void;
   skillAchievementList: SkillAchievement[];
   skill: () => SkillDetails;
@@ -139,7 +140,7 @@ const AddNewSkill = ({
             <Select
               placeholder={t('Select skill type')}
               value={skillTypes.find((item: SkillType) => {
-                return item.skillType.toLowerCase() === skillDetails.skillType?.toLowerCase();
+                return item.skillType.toLowerCase() === skillDetails.skillType.toLowerCase();
               })?.skillType ?? ''}
               onChange={handleChange}
               name='skillType'
