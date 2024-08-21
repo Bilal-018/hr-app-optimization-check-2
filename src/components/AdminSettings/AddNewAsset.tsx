@@ -19,6 +19,7 @@ interface AssetInfo {
 interface AddNewAssetProps {
   open: boolean;
   handleClose: () => void;
+  // eslint-disable-next-line
   handleSave: (assetInfo: AssetInfo) => void;
   asset?: AssetInfo;
 }
