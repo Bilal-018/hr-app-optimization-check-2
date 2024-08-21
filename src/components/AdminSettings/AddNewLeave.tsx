@@ -184,7 +184,7 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
   const { t } = useTranslation();
 
   const getGender = () => {
-
+    // eslint-disable-next-line
     jwtInterceoptor
       .get('api/GenderMaster/GetAllGenderMasters')
       .then((res: any) => {
