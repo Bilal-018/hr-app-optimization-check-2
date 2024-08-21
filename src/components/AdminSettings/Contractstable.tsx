@@ -185,7 +185,7 @@ const Contractstable: React.FC = () => {
           showMessage('An unknown error occurred', 'error');
         }
       })
-      .finally(() => setLoading(false));
+      .finally(() => { setLoading(false) });
   };
 
   const deleteContract = (id: number | null) => {
@@ -211,7 +211,7 @@ const Contractstable: React.FC = () => {
           showMessage('An unknown error occurred', 'error');
         }
       })
-      .finally(() => setLoading(false));
+      .finally(() => { setLoading(false) });
   };
 
   const handleSave = (contractName: string) => {
