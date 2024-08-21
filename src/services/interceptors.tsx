@@ -8,7 +8,7 @@ const API_URL2 = process.env.REACT_APP_API_LEAVE_SERVICE_URL;
 function parseJson<T>(json: string): T {
   return JSON.parse(json) as T;
 }
-
+// eslint-disable-next-line
 const jwtInterceoptor: AxiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
