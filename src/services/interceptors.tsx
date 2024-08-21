@@ -9,7 +9,7 @@ function parseJson<T>(json: string): T {
   return JSON.parse(json) as T;
 }
 
-const jwtInterceoptor: AxiosInstance = axios.create({
+const jwtInterceoptor = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'text/json;charset=utf-8',
@@ -17,7 +17,7 @@ const jwtInterceoptor: AxiosInstance = axios.create({
     'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
     Authorization: '',
   },
-});
+}) as AxiosInstance;
 
 jwtInterceoptor.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   let tokensData: string | null = sessionStorage.getItem('token');
