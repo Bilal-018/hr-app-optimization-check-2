@@ -4,6 +4,11 @@ import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestCo
 const API_URL = process.env.REACT_APP_API_PROFILE_SERVICE_URL;
 const API_URL2 = process.env.REACT_APP_API_LEAVE_SERVICE_URL;
 //console.log("API_URL: "+API_URL);
+
+function parseJson<T>(json: string): T {
+  return JSON.parse(json);
+}
+
 const jwtInterceoptor: AxiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
@@ -17,7 +22,7 @@ const jwtInterceoptor: AxiosInstance = axios.create({
 jwtInterceoptor.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   let tokensData: string | null = sessionStorage.getItem('token');
   if (tokensData !== null) {
-    const parsedTokensData: { token: string } = JSON.parse(tokensData);
+    const parsedTokensData = parseJson<{ token: string }>(tokensData);
     config.headers.Authorization = 'Bearer ' + parsedTokensData.token;
   }
   return config;
@@ -31,7 +36,7 @@ jwtInterceoptor.interceptors.response.use(
     if (error.response?.status === 401) {
       const authData: string | null = sessionStorage.getItem('token');
       if (authData !== null) {
-        const parsedAuthData: { employeedetail: { email: string }, refreshToken: string } = JSON.parse(authData);
+        const parsedAuthData = parseJson<{ employeedetail: { email: string }, refreshToken: string }>(authData);
         const payload = {
           email: parsedAuthData.employeedetail.email,
           refreshToken: parsedAuthData.refreshToken,
