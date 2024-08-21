@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 interface Props {
   open: boolean;
   handleClose: () => void;
+  // eslint-disable-next-line
   handleSave: (department: DepartmentState) => void;
   department: DepartmentState;
   title: string;
