@@ -207,12 +207,12 @@ const BankHolidaySetting: React.FC = () => {
             holidayName,
             country,
           })
-          .then((res: AxiosResponse) => {
+          .then((res: AxiosResponse<BankHolidayResponse>) => {
             if (
               res.data.StatusCode != undefined &&
               res.data.StatusCode !== '200'
             ) {
-              showMessage(res.data.Message, 'error');
+              showMessage(res.data.Message ?? 'An error occurred.', 'error');
             } else {
               showMessage('Bank Holiday added successfully.', 'success');
             }
@@ -235,12 +235,12 @@ const BankHolidaySetting: React.FC = () => {
         .delete(
           `api/PublicHoliday/DeletePublicHoliday?PublicHolidayId=${deleteModal.id}`
         )
-        .then((res: AxiosResponse) => {
+        .then((res: AxiosResponse<BankHolidayResponse>) => {
           if (
             res.data.StatusCode != undefined &&
             res.data.StatusCode !== '200'
           ) {
-            showMessage(res.data.Message, 'error');
+            showMessage(res.data.Message ?? 'An error occurred.', 'error');
           } else {
             showMessage('Bank Holiday deleted successfully.', 'success');
           }
