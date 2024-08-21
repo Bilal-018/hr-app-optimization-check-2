@@ -9,6 +9,7 @@ import dayjs from 'dayjs';
 import DeleteModal from '../Global/DeleteModal';
 import jwtInterceoptor from '../../services/interceptors';
 import { useSnackbar } from '../Global/WithSnackbar';
+import { AxiosResponse } from 'axios';
 
 const headCells = [
   {
@@ -44,7 +45,9 @@ function createData(
   registration: string | null | undefined,
   expiryDate: string | null | undefined,
   id: number,
+  // eslint-disable-next-line
   onEdit: (id: number) => void,
+  // eslint-disable-next-line
   onDelete: (id: number) => void
 ) {
   return {
@@ -141,8 +144,13 @@ const Assets: React.FC = () => {
     isActive?: boolean;
   }
 
+  interface Snackbar {
+    // eslint-disable-next-line
+    showMessage: (message: string, variant: 'error' | 'success' | 'info' | 'warning') => void;
+  }
+
   const [loading, setLoading] = useState<boolean>(false);
-  const { showMessage }: any = useSnackbar();
+  const { showMessage }: Snackbar = useSnackbar() as Snackbar;
   const [assetConfig, setAssetConfig] = useState<AssetConfig[]>([]);
   const [deleteModal, setDeleteModal] = useState<DeleteModalState>({
     open: false,
@@ -150,55 +158,73 @@ const Assets: React.FC = () => {
   });
   const getAssetConfig = () => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceoptor
       .get('api/HrAsset/GetAllAssetConfigurationList')
-      .then((res: any) => {
-        setAssetConfig(res.data as AssetConfig[]);
+      .then((res: AxiosResponse<AssetConfig[]>) => {
+        setAssetConfig(res.data);
         setLoading(false);
       })
-      .catch((err: any) => {
-        showMessage(err.message, 'error');
+      .catch((error: unknown) => {
+        if (typeof error === 'object' && error !== null && 'message' in error) {
+          showMessage((error as { message: string }).message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
   };
 
   const updateAssetConfig = (data: AssetConfig) => {
     setLoading(true);
-
+    // eslint-disable-next-line
     jwtInterceoptor
       .post('api//HrAsset/UpdateAssetConfiguration', data)
       .then(() => {
         showMessage('Asset configuration updated successfully', 'success');
         setLoading(false);
       })
-      .catch((err: any) => {
-        showMessage(err.message, 'error');
+      .catch((error: unknown) => {
+        if (typeof error === 'object' && error !== null && 'message' in error) {
+          showMessage((error as { message: string }).message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
   };
 
   const createNewAssetConfig = (data: AssetConfig) => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceoptor
       .post('api/HrAsset/CreateAssetConfiguration', data)
       .then(() => {
         showMessage('Asset configuration created successfully', 'success');
         setLoading(false);
       })
-      .catch((err: any) => {
-        showMessage(err.message, 'error');
+      .catch((error: unknown) => {
+        if (typeof error === 'object' && error !== null && 'message' in error) {
+          showMessage((error as { message: string }).message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
   };
 
   const deleteLeaveConfig = (id: number | null) => {
     setLoading(true);
-
+    // eslint-disable-next-line
     jwtInterceoptor
       .delete(`api/HrAsset/DeleteAssetConfiguration?AssetConfigurationId=${id}`)
       .then(() => {
         showMessage('Asset configuration deleted successfully', 'success');
         setLoading(false);
       })
-      .catch((err: any) => {
-        showMessage(err.message, 'error');
+      .catch((error: unknown) => {
+        if (typeof error === 'object' && error !== null && 'message' in error) {
+          showMessage((error as { message: string }).message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       })
       .finally(() => {
         getAssetConfig();
