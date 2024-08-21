@@ -149,6 +149,11 @@ const BankHolidaySetting: React.FC = () => {
     country: string;
   }
 
+  interface BankHolidayResponse {
+    StatusCode?: string;
+    Message?: string;
+  }
+
   const [loading, setLoading] = useState<boolean>(false);
   const [holidayConfig, setBankHolidayConfig] = useState<HolidayConfig[]>([]);
 
@@ -185,16 +190,14 @@ const BankHolidaySetting: React.FC = () => {
             holidayName,
             country,
           })
-          .then((res: AxiosResponse) => {
-            if (res.data !== null && res.data !== undefined) {
-              if (
-                res.data.StatusCode != undefined &&
-                res.data.StatusCode !== '200'
-              ) {
-                showMessage(res.data.Message, 'error');
-              } else {
-                showMessage('Bank Holiday updated successfully.', 'success');
-              }
+          .then((res: AxiosResponse<BankHolidayResponse>) => {
+            if (
+              res.data.StatusCode != undefined &&
+              res.data.StatusCode !== '200'
+            ) {
+              showMessage(res.data.Message ?? 'An error occurred.', 'error');
+            } else {
+              showMessage('Bank Holiday updated successfully.', 'success');
             }
           });
       } else {
