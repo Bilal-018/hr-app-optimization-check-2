@@ -72,6 +72,7 @@ const validate = (values: LeaveTypeState) => {
 interface AddNewLeaveProps {
   open: boolean;
   handleClose: () => void;
+  // eslint-disable-next-line
   handleSave: (leaveInfo: LeaveTypeState) => void;
   leave: LeaveTypeState;
   loading: boolean;
@@ -212,18 +213,25 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
 
     jwtLeave
       .get('api/LeaveConfiguration/GetLeaveCategories')
-      .then((res: any) => {
-        setLeaveCategory(res.data as Category[]);
+      .then((res: AxiosResponse<Category[]>) => {
+        setLeaveCategory(res.data);
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
   };
 
   const getContractTypeData = () => {
     jwtInterceoptor
       .get('api/ContractTypeMasters/GetAllContractType')
-      .then((res: any) => {
+      .then((res: AxiosResponse<ContractTypeData[]>) => {
         setContracts(
           res.data.map((contract: ContractTypeData) => ({
             id: contract.contractTypeId,
@@ -231,8 +239,15 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
           }))
         );
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
   }
 
