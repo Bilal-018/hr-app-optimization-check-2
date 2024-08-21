@@ -111,7 +111,7 @@ const AddNewAsset: React.FC<AddNewAssetProps> = ({
 
     setAssetInfo(initialState);
 
-    handleSave(assetInfo as AssetInfo);
+    handleSave(assetInfo);
   };
 
   const { t, i18n } = useTranslation();
