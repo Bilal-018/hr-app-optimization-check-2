@@ -6,7 +6,7 @@ import jwtInterceoptor from '../../services/interceptors';
 import { Box, Grid } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { errorHelperText } from '../../utils/validation';
 import BaseModal from '../Global/Modal';
 import CountrySelect from '../Global/CountryDropdown';
@@ -414,18 +414,20 @@ const BankHolidaySetting: React.FC = () => {
               <DatePicker
                 defaultValue={dayjs(bankHolidayInfo.date)}
                 format='DD/MM/YYYY'
-                onChange={(e: any) => {
-                  handleChange({
-                    target: {
-                      name: 'date',
-                      value:
-                        e.$y +
-                        '-' +
-                        ('0' + (e.$M + 1)).slice(-2) +
-                        '-' +
-                        ('0' + e.$D).slice(-2),
-                    },
-                  });
+                onChange={(e: Dayjs | null) => {
+                  if (e) {
+                    handleChange({
+                      target: {
+                        name: 'date',
+                        value:
+                          e.year() +
+                          '-' +
+                          ('0' + (e.month() + 1)).slice(-2) +
+                          '-' +
+                          ('0' + e.date()).slice(-2),
+                      },
+                    });
+                  }
                 }}
               />
             </LocalizationProvider>
