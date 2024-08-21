@@ -191,12 +191,14 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
       .then((res: AxiosResponse<Gender[]>) => {
         setGenders(res.data);
       })
-      .catch((err: AxiosError) => {
-        if (err.response) {
-          const errorMessage = err.response.data as { Message: string };
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
           showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
         } else {
-          showMessage(err.message, 'error');
+          showMessage('An unknown error occurred', 'error');
         }
       });
   };
