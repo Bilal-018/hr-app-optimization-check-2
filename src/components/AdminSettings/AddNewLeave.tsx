@@ -180,7 +180,11 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
     setSecondBoxItems([]);
   };
 
-  const { showMessage }: any = useSnackbar();
+  interface Snackbar {
+    showMessage: (message: string, variant: 'error' | 'success' | 'info' | 'warning') => void;
+  }
+
+  const { showMessage }: Snackbar = useSnackbar() as Snackbar;
 
   const { t } = useTranslation();
 
@@ -194,9 +198,9 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
       .catch((error: unknown) => {
         if (error instanceof AxiosError && error.response) {
           const errorMessage = error.response.data as { Message: string };
-          showMessage(errorMessage.Message, 'error');
+          showMessage(errorMessage.Message as string, 'error');
         } else if (error instanceof Error) {
-          showMessage(error.message, 'error');
+          showMessage(error.message as string, 'error');
         } else {
           showMessage('An unknown error occurred', 'error');
         }
