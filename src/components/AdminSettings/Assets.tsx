@@ -286,9 +286,7 @@ const Assets: React.FC = () => {
             item.brand,
             item.model,
             item.registration ?? '',
-            typeof item.expiryDate === 'string' ? (
-              dayjs(item.expiryDate) instanceof Error ? '' : dayjs(item.expiryDate).isValid() ? dayjs(item.expiryDate).format('DD/MM/YYYY') : ''
-            ) : '',
+            typeof item.expiryDate === 'string' ? dayjs(item.expiryDate).format('DD/MM/YYYY') : '',
             item.assetConfigurationId,
             onEdit,
             onDelete
