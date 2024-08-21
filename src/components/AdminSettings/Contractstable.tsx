@@ -15,17 +15,26 @@ import { Stack } from 'rsuite';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '../Icon/EditIcon';
 import BinIcon from '../Icon/BinIcon';
+import { AxiosError, AxiosResponse } from 'axios';
 
-function CellAction({ onEdit, id, onDelete }: any) {
+interface CellActionProps {
+  // eslint-disable-next-line
+  onEdit: (id: number) => void;
+  id: number;
+  // eslint-disable-next-line
+  onDelete: (id: number) => void;
+}
+
+function CellAction({ onEdit, id, onDelete }: CellActionProps) {
   return (
     <Box className='action-icon-rounded'>
       <Button
-        onClick={() => onEdit(id)}
+        onClick={() => { onEdit(id) }}
       >
         <EditIcon />
       </Button>
       <Button
-        onClick={() => onDelete(id)}
+        onClick={() => { onDelete(id) }}
       >
         <BinIcon />
       </Button>
@@ -39,33 +48,66 @@ function CellAction({ onEdit, id, onDelete }: any) {
 //   };
 // }
 
+interface NewContract {
+  open: boolean;
+  id: number | null;
+}
+
+interface ContractType {
+  id: number,
+  contractType: string
+}
+
+interface ContractTypeData {
+  contractTypeId: number,
+  contractType: string
+}
+
+interface DeleteModalState {
+  open: boolean;
+  id: number | null;
+}
+
+interface Snackbar {
+  // eslint-disable-next-line
+  showMessage: (message: string, variant: 'error' | 'success' | 'info' | 'warning') => void;
+}
+
 const Contractstable: React.FC = () => {
-  const [newContract, setNewContract] = useState<any>({
+  const [newContract, setNewContract] = useState<NewContract>({
     open: false,
     id: null,
   });
-  const [contracts, setContracts] = useState<any>([]);
-  const [loading, setLoading] = useState<any>(false);
-  const [deleteModal, setDeleteModal] = useState<any>({
+  const [contracts, setContracts] = useState<ContractType[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [deleteModal, setDeleteModal] = useState<DeleteModalState>({
     open: false,
     id: null,
   });
-  const { showMessage }: any = useSnackbar();
+  const { showMessage }: Snackbar = useSnackbar() as Snackbar;
 
   const getContractTypeData = () => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceoptor
       .get('api/ContractTypeMasters/GetAllContractType')
-      .then((res: any) => {
+      .then((res: AxiosResponse<ContractTypeData[]>) => {
         setContracts(
-          res.data.map((contract: any) => ({
+          res.data.map((contract: ContractTypeData) => ({
             id: contract.contractTypeId,
             contractType: contract.contractType,
           }))
         );
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       })
       .finally(() => { setLoading(false) });
   }
@@ -82,8 +124,9 @@ const Contractstable: React.FC = () => {
     });
   };
 
-  const updateContract = (contractName: any) => {
+  const updateContract = (contractName: string) => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceoptor
       .post('api/ContractTypeMasters/UpdatedContractType', {
         contractTypeId: newContract.id,
@@ -91,8 +134,8 @@ const Contractstable: React.FC = () => {
       })
       .then(() => {
         showMessage('Contract type Updated successfully', 'success');
-        setContracts((pre: any) =>
-          pre.map((con: any) =>
+        setContracts((pre: ContractType[]) =>
+          pre.map((con: ContractType) =>
             con.id === newContract.id
               ? { ...con, contractType: contractName }
               : con
@@ -101,21 +144,29 @@ const Contractstable: React.FC = () => {
         handleClose();
         getContractTypeData();
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       })
       .finally(() => setLoading(false));
   };
 
-  const addNewContract = (contractName: any) => {
+  const addNewContract = (contractName: string) => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceoptor
       .post('api/ContractTypeMasters/CreateContractTypeDetail', {
         contractType: contractName,
       })
-      .then((res: any) => {
+      .then((res: AxiosResponse<ContractTypeData>) => {
         showMessage('Contract type Added successfully', 'success');
-        setContracts((pre: any) => [
+        setContracts((pre: ContractType[]) => [
           ...pre,
           {
             id: res.data.contractTypeId,
@@ -125,31 +176,46 @@ const Contractstable: React.FC = () => {
         handleClose();
         getContractTypeData();
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       })
       .finally(() => setLoading(false));
   };
 
   const deleteContract = (id: any) => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceoptor
       .delete(`api/ContractTypeMasters/DeleteContractType?ContractTypeId=${id}`)
       .then(() => {
         showMessage('Contract type deleted successfully', 'success');
-        setContracts((pre: any) => pre.filter((con: any) => con.id !== id));
+        setContracts((pre: ContractType[]) => pre.filter((con: ContractType) => con.id !== id));
         setDeleteModal({
           open: false,
           id: null,
         });
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       })
       .finally(() => setLoading(false));
   };
 
-  const handleSave = (contractName: any) => {
+  const handleSave = (contractName: string) => {
     if (newContract.id) {
       updateContract(contractName);
       return;
@@ -250,7 +316,7 @@ const Contractstable: React.FC = () => {
           </Box>
         ) : (
           <Box style={{ padding: '0 5px' }}>
-            {contracts.map((value: any) => {
+            {contracts.map((value: ContractType) => {
               return (
                 <Stack
                   style={{
@@ -287,8 +353,8 @@ const Contractstable: React.FC = () => {
         handleSave={handleSave}
         value={
           newContract.id
-            ? contracts.find((item: any) => item.id === newContract.id)
-              .contractType
+            ? contracts.find((item: ContractType) => item.id === newContract.id)
+              ?.contractType
             : ''
         }
       />
