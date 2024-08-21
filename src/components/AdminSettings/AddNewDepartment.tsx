@@ -48,7 +48,10 @@ function AddNewDepartment({
   }, [department]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewDepartment({ ...newDepartment, [e.target.name]: e.target.value as string });
+    const target = e.target as HTMLInputElement | null;
+    if (target) {
+      setNewDepartment({ ...newDepartment, [target.name]: target.value });
+    }
   };
 
   const onSave = () => {
