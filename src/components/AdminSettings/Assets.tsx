@@ -280,18 +280,21 @@ const Assets: React.FC = () => {
     >
       <EnhancedTable
         head={headCells}
-        rows={assetConfig.map((item: AssetConfig) =>
+        rows={assetConfig.map((item: AssetConfig) => {
+          const formattedExpiryDate = typeof item.expiryDate === 'string' && dayjs(item.expiryDate).isValid()
+            ? dayjs(item.expiryDate).format('DD/MM/YYYY')
+            : '';
           createData(
             item.equipment,
             item.brand,
             item.model,
             item.registration ?? '',
-            typeof item.expiryDate === 'string' ? dayjs(item.expiryDate).format('DD/MM/YYYY') : '',
+            formattedExpiryDate,
             item.assetConfigurationId,
             onEdit,
             onDelete
           )
-        )}
+        })}
         isAddable={true}
         onAddClick={() => {
           setOpen({
