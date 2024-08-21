@@ -20,6 +20,7 @@ import { errorHelperText } from '../../utils/validation';
 import { useTranslation } from 'react-i18next';
 import jwtInterceoptor, { jwtLeave } from '../../services/interceptors';
 import { useSnackbar } from '../Global/WithSnackbar';
+import { AxiosError, AxiosResponse } from 'axios';
 
 interface LeaveTypeState {
   leaveType: string;
@@ -187,11 +188,16 @@ const AddNewLeave = ({ open, handleClose, handleSave, leave, loading }: AddNewLe
     // eslint-disable-next-line
     jwtInterceoptor
       .get('api/GenderMaster/GetAllGenderMasters')
-      .then((res: any) => {
-        setGenders(res.data as Gender[]);
+      .then((res: AxiosResponse<Gender[]>) => {
+        setGenders(res.data);
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((err: AxiosError) => {
+        if (err.response) {
+          const errorMessage = err.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else {
+          showMessage(err.message, 'error');
+        }
       });
   };
 
