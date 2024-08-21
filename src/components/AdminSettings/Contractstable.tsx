@@ -114,7 +114,6 @@ const Contractstable: React.FC = () => {
 
   useEffect(() => {
     getContractTypeData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleClose = () => {
@@ -154,7 +153,7 @@ const Contractstable: React.FC = () => {
           showMessage('An unknown error occurred', 'error');
         }
       })
-      .finally(() => setLoading(false));
+      .finally(() => { setLoading(false) });
   };
 
   const addNewContract = (contractName: string) => {
@@ -189,7 +188,7 @@ const Contractstable: React.FC = () => {
       .finally(() => setLoading(false));
   };
 
-  const deleteContract = (id: any) => {
+  const deleteContract = (id: number | null) => {
     setLoading(true);
     // eslint-disable-next-line
     jwtInterceoptor
@@ -224,14 +223,14 @@ const Contractstable: React.FC = () => {
     addNewContract(contractName);
   };
 
-  const onEdit = (id: any) => {
+  const onEdit = (id: number) => {
     setNewContract({
       open: true,
       id,
     });
   };
 
-  const onDelete = (id: any) => {
+  const onDelete = (id: number) => {
     setDeleteModal({
       open: true,
       id: id,
@@ -256,7 +255,7 @@ const Contractstable: React.FC = () => {
           background: 'transparent',
           my: 1,
         }}
-        onClick={() => setNewContract({ open: true, id: null })}
+        onClick={() => { setNewContract({ open: true, id: null }) }}
       >
         <Box
           sx={{
@@ -337,8 +336,8 @@ const Contractstable: React.FC = () => {
                   </Typography>
                   <CellAction
                     id={value.id}
-                    onEdit={() => onEdit(value.id)}
-                    onDelete={() => onDelete(value.id)}
+                    onEdit={() => { onEdit(value.id) }}
+                    onDelete={() => { onDelete(value.id) }}
                   />
                 </Stack>
               );
@@ -361,13 +360,13 @@ const Contractstable: React.FC = () => {
 
       <DeleteModal
         message={'Are you sure you want to delete this contract type?'}
-        onCancel={() =>
+        onCancel={() => {
           setDeleteModal({
             open: false,
             id: null,
           })
-        }
-        onConfirm={() => deleteContract(deleteModal.id)}
+        }}
+        onConfirm={() => { deleteContract(deleteModal.id) }}
         open={deleteModal.open}
         title={'Delete Contract Type'}
       />
