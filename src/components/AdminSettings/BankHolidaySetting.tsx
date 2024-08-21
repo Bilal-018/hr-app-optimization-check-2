@@ -186,13 +186,15 @@ const BankHolidaySetting: React.FC = () => {
             country,
           })
           .then((res: AxiosResponse) => {
-            if (
-              res.data.StatusCode != undefined &&
-              res.data.StatusCode !== '200'
-            ) {
-              showMessage(res.data.Message, 'error');
-            } else {
-              showMessage('Bank Holiday updated successfully.', 'success');
+            if (res.data !== null && res.data !== undefined) {
+              if (
+                res.data.StatusCode != undefined &&
+                res.data.StatusCode !== '200'
+              ) {
+                showMessage(res.data.Message, 'error');
+              } else {
+                showMessage('Bank Holiday updated successfully.', 'success');
+              }
             }
           });
       } else {
