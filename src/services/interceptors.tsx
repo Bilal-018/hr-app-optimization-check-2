@@ -6,7 +6,7 @@ const API_URL2 = process.env.REACT_APP_API_LEAVE_SERVICE_URL;
 //console.log("API_URL: "+API_URL);
 
 function parseJson<T>(json: string): T {
-  return JSON.parse(json);
+  return JSON.parse(json) as T;
 }
 
 const jwtInterceoptor: AxiosInstance = axios.create({
