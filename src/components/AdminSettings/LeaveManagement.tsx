@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import EnhancedTable from '../Global/Table';
 import { Box, Button, Grid } from '@mui/material';
 import { CircularChip } from '../Global/Chips';
@@ -9,6 +9,7 @@ import DeleteModal from '../Global/DeleteModal';
 import BankHolidaySetting from './BankHolidaySetting';
 import EditIcon from '../Icon/EditIcon';
 import BinIcon from '../Icon/BinIcon';
+import { AxiosResponse } from 'axios';
 
 const headCells = [
   {
@@ -120,7 +121,7 @@ function Assets() {
     setLoading(true);
     jwtLeave
       .get('api/LeaveConfiguration/GetAllLeaveConfiguration')
-      .then((res) => {
+      .then((res: AxiosResponse<LeaveTypeState[]>) => {
         setLeaveConfig(res.data);
         setLoading(false);
       })
@@ -221,7 +222,7 @@ function Assets() {
     });
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     getLeaveConfig();
   }, []);
 
