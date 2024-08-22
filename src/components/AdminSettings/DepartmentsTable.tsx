@@ -273,7 +273,7 @@ const DepartmentsTable: React.FC = () => {
             department.costCenter,
             onEdit,
             onDelete,
-            department.id!
+            department.id ?? 0
           )
         )}
         // isAddable={true}
