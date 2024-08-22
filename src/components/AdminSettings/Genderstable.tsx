@@ -15,8 +15,17 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '../Icon/EditIcon';
 import BinIcon from '../Icon/BinIcon';
 import AddNewGender from './AddNewGender';
+import { AxiosError, AxiosResponse } from 'axios';
 
-function CellAction({ onEdit, id, onDelete }: any) {
+interface CellActionProps {
+  // eslint-disable-next-line
+  onEdit: (id: number) => void;
+  // eslint-disable-next-line
+  onDelete: (id: number) => void;
+  id: number;
+}
+
+function CellAction({ onEdit, id, onDelete }: CellActionProps) {
   return (
     <Box className='action-icon-rounded'>
       <Button
@@ -33,26 +42,47 @@ function CellAction({ onEdit, id, onDelete }: any) {
   );
 }
 
+interface ModalState {
+  open: boolean;
+  id: number | null;
+}
+
+interface Snackbar {
+  // eslint-disable-next-line
+  showMessage: (message: string, variant: 'error' | 'success' | 'info' | 'warning') => void;
+}
+
+interface GenderState {
+  genderId: number;
+  gender: string;
+}
+
+interface Gender {
+  id: number;
+  value: string;
+}
+
 const Genderstable: React.FC = () => {
-  const [newGender, setNewGender] = useState<any>({
+  const [newGender, setNewGender] = useState<ModalState>({
     open: false,
     id: null,
   });
-  const [genders, setGenderData] = useState<any>([]);
-  const [loading, setLoading] = useState<any>(false);
-  const [deleteModal, setDeleteModal] = useState<any>({
+  const [genders, setGenderData] = useState<Gender[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [deleteModal, setDeleteModal] = useState<ModalState>({
     open: false,
     id: null,
   });
-  const { showMessage }: any = useSnackbar();
+  const { showMessage }: Snackbar = useSnackbar() as Snackbar;
 
   const getGenderData = () => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceoptor
       .get('api/GenderMaster/GetAllGenderMasters')
-      .then((res: any) => {
+      .then((res: AxiosResponse<GenderState[]>) => {
         setGenderData(
-          res.data.map((item: any) => ({
+          res.data.map((item: GenderState) => ({
             id: item.genderId,
             value: item.gender,
           }))
@@ -60,14 +90,20 @@ const Genderstable: React.FC = () => {
 
         setLoading(false);
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
   }
 
   useEffect(() => {
     getGenderData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleClose = () => {
@@ -76,8 +112,10 @@ const Genderstable: React.FC = () => {
       id: null,
     });
   };
-  const updateGender = (gender: any) => {
+
+  const updateGender = (gender: string) => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceoptor
       .post('api/GenderMaster/UpdatedGenderMaster', {
         genderId: newGender.id,
@@ -85,8 +123,8 @@ const Genderstable: React.FC = () => {
       })
       .then(() => {
         showMessage('Gender Updated successfully', 'success');
-        setGenderData((pre: any) =>
-          pre.map((con: any) =>
+        setGenderData((pre: Gender[]) =>
+          pre.map((con: Gender) =>
             con.id === newGender.id
               ? { ...con, value: gender }
               : con
@@ -95,21 +133,29 @@ const Genderstable: React.FC = () => {
         handleClose();
         getGenderData();
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       })
       .finally(() => { setLoading(false) });
   };
 
-  const addNewGender = (gender: any) => {
+  const addNewGender = (gender: string) => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceoptor
       .post('api/GenderMaster/CreateGenderMaster', {
         gender: gender,
       })
-      .then((res: any) => {
+      .then((res: AxiosResponse<GenderState>) => {
         showMessage('Gender added successfully', 'success');
-        setGenderData((pre: any) => [
+        setGenderData((pre: Gender[]) => [
           ...pre,
           {
             id: res.data.genderId,
@@ -119,31 +165,46 @@ const Genderstable: React.FC = () => {
         handleClose();
         getGenderData();
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       })
-      .finally(() => setLoading(false));
+      .finally(() => { setLoading(false) });
   };
 
-  const deleteGender = (id: any) => {
+  const deleteGender = (id: number) => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceoptor
       .delete(`api/GenderMaster/DeleteGenderMaster?GenderId=${id}`)
       .then(() => {
         showMessage('Gender deleted successfully', 'success');
-        setGenderData((pre: any) => pre.filter((con: any) => con.id !== id));
+        setGenderData((pre: Gender[]) => pre.filter((con: Gender) => con.id !== id));
         setDeleteModal({
           open: false,
           id: null,
         });
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       })
-      .finally(() => setLoading(false));
+      .finally(() => { setLoading(false) });
   };
 
-  const handleSave = (gender: any) => {
+  const handleSave = (gender: string) => {
     if (newGender.id) {
       updateGender(gender);
       return;
@@ -152,14 +213,14 @@ const Genderstable: React.FC = () => {
     addNewGender(gender);
   };
 
-  const onEdit = (id: any) => {
+  const onEdit = (id: number) => {
     setNewGender({
       open: true,
       id,
     });
   };
 
-  const onDelete = (id: any) => {
+  const onDelete = (id: number) => {
     setDeleteModal({
       open: true,
       id: id,
@@ -174,7 +235,7 @@ const Genderstable: React.FC = () => {
           textTransform: 'capitalize',
           background: 'transparent',
         }}
-        onClick={() => setNewGender({ open: true, id: null })}
+        onClick={() => { setNewGender({ open: true, id: null }) }}
       >
         <Box
           sx={{
@@ -234,7 +295,7 @@ const Genderstable: React.FC = () => {
           </Box>
         ) : (
           <Box style={{ padding: '0 5px' }}>
-            {genders.map((value: any) => {
+            {genders.map((value: Gender) => {
               return (
                 <Stack
                   style={{
@@ -255,8 +316,8 @@ const Genderstable: React.FC = () => {
                   </Typography>
                   <CellAction
                     id={value.id}
-                    onEdit={() => onEdit(value.id)}
-                    onDelete={() => onDelete(value.id)}
+                    onEdit={() => { onEdit(value.id) }}
+                    onDelete={() => { onDelete(value.id) }}
                   />
                 </Stack>
               );
@@ -271,20 +332,24 @@ const Genderstable: React.FC = () => {
         handleSave={handleSave}
         value={
           newGender.id
-            ? genders.find((item: any) => item.id === newGender.id).value
+            ? genders.find((item: Gender) => item.id === newGender.id)?.value
             : ''
         }
       />
 
       <DeleteModal
         message={'Are you sure you want to delete this Gender?'}
-        onCancel={() =>
+        onCancel={() => {
           setDeleteModal({
             open: false,
             id: null,
           })
-        }
-        onConfirm={() => deleteGender(deleteModal.id)}
+        }}
+        onConfirm={() => {
+          if (deleteModal.id !== null) {
+            deleteGender(deleteModal.id)
+          }
+        }}
         open={deleteModal.open}
         title={'Delete Gender'}
       />
