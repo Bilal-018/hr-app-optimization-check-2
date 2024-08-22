@@ -220,10 +220,10 @@ const DepartmentsTable: React.FC = () => {
           background: "transparent",
           my: 1
         }}
-        onClick={() => setNewDapartment({
+        onClick={() => { setNewDapartment({
           open: true,
           id: null,
-        })}
+        })}}
       >
         <Box
           sx={{
