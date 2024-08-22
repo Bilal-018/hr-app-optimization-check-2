@@ -10,13 +10,16 @@ import AddIcon from '@mui/icons-material/Add';
 import { t } from 'i18next';
 import EditIcon from '../Icon/EditIcon';
 import BinIcon from '../Icon/BinIcon';
+import { AxiosError, AxiosResponse } from 'axios';
 
 function createData2(
-  department: any,
-  costCenter: any,
-  onEdit: any,
-  onDelete: any,
-  id: any
+  department: string,
+  costCenter: string,
+  // eslint-disable-next-line
+  onEdit: (id: number) => void,
+  // eslint-disable-next-line
+  onDelete: (id: number) => void,
+  id: number
 ) {
   return {
     department,
@@ -24,17 +27,26 @@ function createData2(
     Action: <CellAction onEdit={onEdit} onDelete={onDelete} id={id} />,
   };
 }
+
+interface CellActionProps {
+  // eslint-disable-next-line
+  onEdit: (id: number) => void;
+  // eslint-disable-next-line
+  onDelete: (id: number) => void;
+  id: number;
+}
+
 const noop = () => { /* do nothing */ };
-function CellAction({ onEdit = noop, onDelete = noop, id }: any) {
+function CellAction({ onEdit = noop, onDelete = noop, id }: CellActionProps) {
   return (
     <Box className='action-icon-rounded'>
       <Button
-        onClick={() => onEdit(id)}
+        onClick={() => { onEdit(id) }}
       >
         <EditIcon />
       </Button>
       <Button
-        onClick={() => onDelete(id)}
+        onClick={() => { onDelete(id) }}
       >
         <BinIcon />
       </Button>
@@ -42,45 +54,75 @@ function CellAction({ onEdit = noop, onDelete = noop, id }: any) {
   );
 }
 
+interface Departments {
+  id: number | null;
+  department: string;
+  costCenter: string;
+}
+
+interface DepartmentsState {
+  departmentId: number;
+  department: string;
+  costCenter: string;
+}
+
+interface ModalState {
+  open: boolean;
+  id: number | null;
+}
+
+interface Snackbar {
+  // eslint-disable-next-line
+  showMessage: (message: string, variant: 'error' | 'success' | 'info' | 'warning') => void;
+}
+
 const DepartmentsTable: React.FC = () => {
-  const [newDapartment, setNewDapartment] = useState<any>({
+  const [newDapartment, setNewDapartment] = useState<ModalState>({
     open: false,
     id: null,
   });
-  const [DeleteDepartmentMaster, setDeleteDepartmentMaster] = useState<any>({
+  const [DeleteDepartmentMaster, setDeleteDepartmentMaster] = useState<ModalState>({
     open: false,
     id: null,
   });
 
-  const [departments, setDepartments] = useState<any>([]);
-  const [loading, setLoading] = useState<any>(false);
-  const { showMessage }: any = useSnackbar();
+  const [departments, setDepartments] = useState<Departments[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const { showMessage }: Snackbar = useSnackbar() as Snackbar;
 
   const getDepartments = () => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceoptor
       .get('api/DepartmentMaster/GetAllDepartmentMasterList')
-      .then((res: any) => {
+      .then((res: AxiosResponse<DepartmentsState[]>) => {
         setDepartments(
-          res.data.map((item: any) => ({
+          res.data.map((item: DepartmentsState) => ({
             id: item.departmentId,
             department: item.department,
             costCenter: item.costCenter,
           }))
         );
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       })
       .finally(() => { setLoading(false) });
   };
 
   useEffect(() => {
     getDepartments();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const deletDepartment = () =>
+  const deletDepartment = () => {
+    // eslint-disable-next-line
     jwtInterceoptor
       .delete(
         `api/DepartmentMaster/DeleteDepartmentMaster?DepartmentId=${DeleteDepartmentMaster.id}`
@@ -88,15 +130,24 @@ const DepartmentsTable: React.FC = () => {
       .then(() => {
         showMessage('Department Information Deleted Successfully', 'success');
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       })
       .finally(() => {
         setDeleteDepartmentMaster({ open: false, id: null });
         getDepartments();
       });
+  }
 
-  const updateDepartment = (data: any) =>
+  const updateDepartment = (data: Departments) => {
+    // eslint-disable-next-line
     jwtInterceoptor
       .post('api/DepartmentMaster/UpdateDepartmentMaster', {
         departmentId: data.id,
@@ -106,14 +157,23 @@ const DepartmentsTable: React.FC = () => {
       .then(() => {
         showMessage('Department Information Updated Successfully', 'success');
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       })
       .finally(() => {
         getDepartments();
       });
+  }
 
-  const addDepartment = (data: any) =>
+  const addDepartment = (data: Departments) => {
+    // eslint-disable-next-line
     jwtInterceoptor
       .post('api/DepartmentMaster/CreateDepartmentMaster', {
         department: data.department,
@@ -122,18 +182,26 @@ const DepartmentsTable: React.FC = () => {
       .then(() => {
         showMessage('Department record added successfully', 'success');
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       })
       .finally(() => {
         getDepartments();
       });
+  }
 
-  const onEdit = (id: any) => {
+  const onEdit = (id: number) => {
     setNewDapartment({ open: true, id });
   };
 
-  const onDelete = (id: any) => {
+  const onDelete = (id: number) => {
     setDeleteDepartmentMaster({ open: true, id });
   };
 
@@ -199,13 +267,13 @@ const DepartmentsTable: React.FC = () => {
             label: 'Actions',
           },
         ]}
-        rows={departments.map((department: any) =>
+        rows={departments.map((department: Departments) =>
           createData2(
             department.department,
             department.costCenter,
             onEdit,
             onDelete,
-            department.id
+            department.id!
           )
         )}
         // isAddable={true}
@@ -213,19 +281,19 @@ const DepartmentsTable: React.FC = () => {
           minWidth: '100%',
         }}
         loading={loading}
-        onAddClick={() =>
+        onAddClick={() => {
           setNewDapartment({
             open: true,
             id: null,
           })
-        }
+        }}
       />
       <AddNewDepartment
         open={newDapartment.open}
-        handleClose={() => setNewDapartment(false)}
+        handleClose={() => { setNewDapartment({ open: false, id: null }) }}
         handleSave={newDapartment.id ? updateDepartment : addDepartment}
         department={
-          departments.find((item: any) => item.id === newDapartment.id) || {}
+          departments.find((item: Departments) => item.id === newDapartment.id) ?? { department: '', costCenter: '', id: null }
         }
         title={
           newDapartment.id
@@ -236,8 +304,8 @@ const DepartmentsTable: React.FC = () => {
       <DeleteModal
         message={'Are you sure you want to delete this department?'}
         title={'Delete Department'}
-        onCancel={() => setDeleteDepartmentMaster({ open: false, id: null })}
-        onConfirm={() => deletDepartment()}
+        onCancel={() => { setDeleteDepartmentMaster({ open: false, id: null }) }}
+        onConfirm={() => { deletDepartment() }}
         open={DeleteDepartmentMaster.open}
       />
     </>
