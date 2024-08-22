@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Grid } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import jwtInterceoptor from '../../services/interceptors';
@@ -8,40 +7,43 @@ import DepartmentsTable from './DepartmentsTable';
 import InfoCards from './InfoCards';
 import { useTranslation } from 'react-i18next';
 import Gendertable from './Genderstable';
+import { AxiosError, AxiosResponse } from 'axios';
+
+interface ConfigurationState {
+  key: string;
+  value: string;
+}
+
+interface Configuration {
+  id: number;
+  title: string;
+  value: string;
+}
+
+interface Snackbar {
+  // eslint-disable-next-line
+  showMessage: (message: string, variant: 'error' | 'success' | 'info' | 'warning') => void;
+}
+
+interface ConfigSaveProps {
+  updatedFields: Configuration[];
+  newFields: Configuration[];
+  removedFields: Configuration[];
+}
+
 const EmployeeInfo: React.FC = () => {
-  const [genderData, setGenderData] = useState<any>([]);
-  const [configData, setConfigData] = useState<any>([]);
-  const [loading, setLoading] = useState<any>(false);
-  const { showMessage }: any = useSnackbar();
-
-  const getGender = () => {
-    setLoading(true);
-
-    jwtInterceoptor
-      .get('api/GenderMaster/GetAllGenderMasters')
-      .then((res: any) => {
-        setGenderData(
-          res.data.map((item: any) => ({
-            id: item.genderId,
-            value: item.gender,
-          }))
-        );
-
-        setLoading(false);
-      })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
-      });
-  };
+  const [configData, setConfigData] = useState<Configuration[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const { showMessage }: Snackbar = useSnackbar() as Snackbar;
 
   const GetAllConfigurationValue = () => {
     setLoading(true);
-
+    // eslint-disable-next-line
     jwtInterceoptor
       .get('api/ConfigurationValues/GetAllConfigurationValue')
-      .then((res: any) => {
+      .then((res: AxiosResponse<ConfigurationState[]>) => {
         setConfigData(
-          res.data.map((item: any, i: any) => ({
+          res.data.map((item: ConfigurationState, i: number) => ({
             id: i * 2,
             value: item.value,
             title: item.key,
@@ -50,119 +52,100 @@ const EmployeeInfo: React.FC = () => {
 
         setLoading(false);
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
   };
 
   useEffect(() => {
     GetAllConfigurationValue();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const deletGender = (id: any) =>
-    jwtInterceoptor
-      .delete(`api/GenderMaster/DeleteGenderMaster?GenderId=${id}`)
-      .then((res: any) => {
-        showMessage(res.data, 'success');
-      })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
-      });
-
-  const updateGender = (data: any) =>
-    jwtInterceoptor
-      .post('api/GenderMaster/UpdatedGenderMaster', {
-        genderId: data.id,
-        gender: data.value,
-      })
-      .then((res: any) => {
-        showMessage(res.data, 'success');
-        return res.data;
-      })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
-      });
-
-  const addGender = (data: any) =>
-    jwtInterceoptor
-      .post('api/GenderMaster/CreateGenderMaster', {
-        gender: data.value,
-      })
-      .then((res: any) => {
-        showMessage(res.data, 'success');
-      })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
-      });
-
-  const onGenderSave = async ({
-    updatedFields,
-    newFields,
-    removedFields,
-  }: any) => {
-    await newFields.forEach((item: any) => {
-      addGender(item);
-    });
-    await updatedFields.forEach((item: any) => {
-      updateGender(item);
-    });
-    await removedFields.forEach((item: any) => {
-      deletGender(item.id);
-    });
-  };
-
-  const updateConfig = (data: any) =>
+  const updateConfig = (data: Configuration) => {
+    // eslint-disable-next-line
     jwtInterceoptor
       .post('api/ConfigurationValues/Update', {
         key: data.title,
         value: data.value,
       })
-      .then((res: any) => {
+      .then(() => {
         GetAllConfigurationValue();
         showMessage('Updated Configuration data', 'success');
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
+  }
 
-  const addConfig = (data: any) =>
+  const addConfig = (data: Configuration) => {
+    // eslint-disable-next-line
     jwtInterceoptor
       .post('api/ConfigurationValues/Create', {
         key: data.title,
         value: data.value,
       })
-      .then((res: any) => {
+      .then(() => {
         GetAllConfigurationValue();
         showMessage('Added Configuration data', 'success');
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
+  }
 
-  const deleteConfig = (data: any) =>
+  const deleteConfig = (data: Configuration) => {
+    // eslint-disable-next-line
     jwtInterceoptor
       .delete(`api/ConfigurationValues/Delete?key=${data.title}`)
-      .then((res: any) => {
+      .then(() => {
         GetAllConfigurationValue();
         showMessage('Deleted Configuration data', 'success');
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
+  }
 
-  const onConfigSave = async ({
+  const onConfigSave = ({
     updatedFields,
     newFields,
     removedFields,
-  }: any) => {
-    await newFields.forEach((item: any) => {
+  }: ConfigSaveProps) => {
+    newFields.forEach((item: Configuration) => {
       addConfig(item);
     });
-    await updatedFields.forEach((item: any) => {
+    updatedFields.forEach((item: Configuration) => {
       updateConfig(item);
     });
-    await removedFields.forEach((item: any) => {
+    removedFields.forEach((item: Configuration) => {
       deleteConfig(item);
     });
 
@@ -176,8 +159,6 @@ const EmployeeInfo: React.FC = () => {
       <Grid
         container
         spacing={2}
-        // rowGap={4}
-        // p={1}
         justifyContent='space-between'
       >
         <Grid
@@ -185,18 +166,11 @@ const EmployeeInfo: React.FC = () => {
           md={7}
           xs={12}
           className='section-border'
-          sx={(theme) => ({
-            // border: `1px solid ${theme.palette.common.black}`,
+          sx={() => ({
             padding: 0,
           })}
         >
           <h3>{t('General Settings')}</h3>
-          {/* <InfoCards
-            values={genderData}
-            onSave={onGenderSave}
-            title='Gender'
-            loading={loading}
-          /> */}
           <Gendertable />
           <Contractstable />
         </Grid>
@@ -206,8 +180,7 @@ const EmployeeInfo: React.FC = () => {
           md={5}
           xs={12}
           className='section-border'
-          sx={(theme) => ({
-            // border: `1px solid ${theme.palette.common.black}`,
+          sx={() => ({
             padding: 0,
           })}
         >
@@ -224,69 +197,6 @@ const EmployeeInfo: React.FC = () => {
           />
         </Grid>
       </Grid>
-      {/* <Grid
-        container
-        // columnGap={1}
-        // rowGap={4}
-        // p={1}
-        justifyContent='space-between'
-      >
-        <Grid
-          item
-          md={5.8}
-          xs={12}
-          className='section-border'
-          sx={(theme) => ({
-            // border: `1px solid ${theme.palette.common.black}`,
-            padding: 0
-          })}
-        >
-          <h3>{t('General Settings')}</h3>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={5}>
-              <InfoCards
-                values={genderData}
-                onSave={onGenderSave}
-                title='Gender'
-                loading={loading}
-              />
-            </Grid>
-            <Grid item xs={12} md={7}>
-              <InfoCards
-                twoTier
-                title2={t('Key')}
-                values={configData}
-                onSave={onConfigSave}
-                title={t('Value')}
-                saveOnTop
-                mainTitle='Configuration Values'
-                loading={loading}
-              />
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          md={5.8}
-          className='section-border'
-          sx={(theme) => ({
-            border: `1px solid ${theme.palette.common.black}`,
-          })}
-        >
-          <Contractstable />
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          className='section-border'
-          sx={(theme) => ({
-            border: `1px solid ${theme.palette.common.black}`,
-          })}
-        >
-          <DepartmentsTable />
-        </Grid>
-      </Grid> */}
     </>
   );
 };
