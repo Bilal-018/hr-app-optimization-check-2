@@ -34,7 +34,9 @@ function createData(
   Limitation: string,
   Daysentitled: number,
   id: number,
+  // eslint-disable-next-line
   onEdit: (id: number) => void,
+  // eslint-disable-next-line
   onDelete: (id: number) => void
 ) {
 
@@ -59,9 +61,9 @@ function createData(
 interface CellActionProps {
   // eslint-disable-next-line
   onEdit: (id: number) => void;
+  id: number;
   // eslint-disable-next-line
   onDelete: (id: number) => void;
-  id: number;
 }
 
 function CellAction({ onEdit, id, onDelete }: CellActionProps) {
@@ -175,7 +177,7 @@ function Assets() {
       }).finally(() => { setLoading(false) });
   }
 
-  const deleteLeaveConfig = async (id: number) => {
+  const deleteLeaveConfig = (id: number) => {
     jwtLeave
       .delete(
         `api/LeaveConfiguration/DeleteLeaveConfiguration?leaveTypeId=${id}`

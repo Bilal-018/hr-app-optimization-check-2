@@ -32,7 +32,7 @@ function AddNewDepartment({
   title,
 }: Props) {
   const [newDepartment, setNewDepartment] = useState<DepartmentState>(
-    department !== undefined && department.department ? department : initialState
+    department?.department ? department : initialState
   );
   const [error, setError] = useState<{
     department: boolean;
