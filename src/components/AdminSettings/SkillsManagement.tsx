@@ -39,12 +39,14 @@ function CellAction({ id, onEdit, onDelete }: CellActionProps) {
 }
 
 function createData(
-  skill: any,
-  skillLevel: any,
-  skillScore: any,
-  onEdit: any,
-  id: any,
-  onDelete: any
+  skill: string,
+  skillLevel: string,
+  skillScore: JSX.Element,
+  // eslint-disable-next-line
+  onEdit: (id: number) => void,
+  id: number,
+  // eslint-disable-next-line
+  onDelete: (id: number) => void
 ) {
   return {
     skill,
