@@ -9,7 +9,7 @@ interface SkillDetails {
   skill: string;
   skillType: string;
   achievementScore: number;
-  id?: number;
+  id?: number | null;
 }
 
 const initialState: SkillDetails = {

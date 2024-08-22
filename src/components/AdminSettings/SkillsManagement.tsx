@@ -11,17 +11,26 @@ import SkillTypeSetting from './SkillTypeSetting';
 import { useTranslation } from 'react-i18next';
 import EditIcon from '../Icon/EditIcon';
 import BinIcon from '../Icon/BinIcon';
+import { AxiosError, AxiosResponse } from 'axios';
 
-function CellAction({ id, onEdit, onDelete }: any) {
+interface CellActionProps {
+  id: number;
+  // eslint-disable-next-line
+  onEdit: (id: number) => void;
+  // eslint-disable-next-line
+  onDelete: (id: number) => void;
+}
+
+function CellAction({ id, onEdit, onDelete }: CellActionProps) {
   return (
     <Box className='action-icon-rounded'>
       <Button
-        onClick={() => onEdit(id)}
+        onClick={() => { onEdit(id) }}
       >
         <EditIcon />
       </Button>
       <Button
-        onClick={() => onDelete(id)}
+        onClick={() => { onDelete(id) }}
       >
         <BinIcon />
       </Button>
@@ -45,23 +54,76 @@ function createData(
   };
 }
 
+interface ModalState {
+  open: boolean;
+  id: number | null;
+}
+
+interface Snackbar {
+  // eslint-disable-next-line
+  showMessage: (message: string, variant: 'error' | 'success' | 'info' | 'warning') => void;
+}
+
+interface SkillExpertise {
+  skillExpertiseId: number;
+  expertise: string;
+  agendaColor: string;
+}
+
+interface SkillExpertiseState {
+  id: number;
+  value: string;
+}
+
+interface SkillConfiguration {
+  skillConfigurationId: number;
+  skill: string;
+  skillType: string;
+  requiredScore: number;
+  requiredSkillAchievementId: number;
+}
+
+interface SkillConfigurationState {
+  id?: number | null;
+  skill: string;
+  skillType: string;
+  achievementScore: number;
+}
+
+interface SkillAchievement {
+  skillAchievementId: number;
+  description: string;
+  score: number;
+}
+
+interface SkillAchievementState {
+  id: number;
+  title: string;
+  value: number;
+}
+
+interface SkillType {
+  skillTypeDetailId: number;
+  skillType: string;
+}
+
 function EmployeeInfo() {
-  const [newSkill, setNewSkill] = useState<any>({
+  const [newSkill, setNewSkill] = useState<ModalState>({
     open: false,
     id: null,
   });
-  const [skillExpertiseList, setSkillExpertiseList] = useState<any>([]);
-  const [skillAchievementList, setSkillAchievementList] = useState<any>([]);
-  const [SkillConfiguration, setSkillConfiguration] = useState<any>([]);
-  const [loading, setLoading] = useState<any>(false);
-  const [tableLoading, setTableLoading] = useState<any>(false);
-  const { showMessage }: any = useSnackbar();
-  const [deleteModal, setDeleteModal] = useState<any>({
+  const [skillExpertiseList, setSkillExpertiseList] = useState<SkillExpertise[]>([]);
+  const [skillAchievementList, setSkillAchievementList] = useState<SkillAchievement[]>([]);
+  const [SkillConfiguration, setSkillConfiguration] = useState<SkillConfiguration[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [tableLoading, setTableLoading] = useState<boolean>(false);
+  const { showMessage }: Snackbar = useSnackbar() as Snackbar;
+  const [deleteModal, setDeleteModal] = useState<ModalState>({
     open: false,
     id: null,
   });
 
-  const onEdit = (id: any) => {
+  const onEdit = (id: number) => {
     setNewSkill({
       open: true,
       id,
@@ -70,13 +132,21 @@ function EmployeeInfo() {
 
   const getExpertise = () => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceoptor
       .get('api/SkillConfiguration/GetSkillExpertiseList')
-      .then((res: any) => {
+      .then((res: AxiosResponse<SkillExpertise[]>) => {
         setSkillExpertiseList(res.data);
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -85,30 +155,48 @@ function EmployeeInfo() {
 
   const getSkillsConfiguration = () => {
     setTableLoading(true);
+    // eslint-disable-next-line
     jwtInterceoptor
       .get('api/SkillConfiguration/GetSkillConfigurationList')
-      .then((res: any) => {
+      .then((res: AxiosResponse<SkillConfiguration[]>) => {
         setSkillConfiguration(res.data);
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       })
       .finally(() => {
         setTableLoading(false);
       });
   };
 
-  const getSkillAchievement = () =>
+  const getSkillAchievement = () => {
+    // eslint-disable-next-line
     jwtInterceoptor
       .get('api/SkillConfiguration/GetSkillAchievementList')
-      .then((res: any) => {
+      .then((res: AxiosResponse<SkillAchievement[]>) => {
         setSkillAchievementList(res.data);
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
+  }
 
-  const updateAchievement = (data: any) =>
+  const updateAchievement = (data: SkillAchievementState) => {
+    // eslint-disable-next-line
     jwtInterceoptor
       .post('api/SkillConfiguration/UpdateSkillAchievement', {
         skillAchievementId: data.id,
@@ -119,11 +207,20 @@ function EmployeeInfo() {
         showMessage('Skill Achievement Updated Successfully', 'success');
         getSkillAchievement();
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
+  }
 
-  const updateExpertise = (data: any) =>
+  const updateExpertise = (data: SkillExpertiseState) => {
+    // eslint-disable-next-line
     jwtInterceoptor
       .post('api/SkillConfiguration/UpdateSkillExpertise', {
         skillExpertiseId: data.id,
@@ -132,37 +229,45 @@ function EmployeeInfo() {
       .then(() => {
         showMessage('Skill Expertise Updated Successfully', 'success');
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
+  }
 
   useEffect(() => {
     getExpertise();
     getSkillAchievement();
     getSkillsConfiguration();
     getSkillTypeConfig();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onExpertiseSave = async ({ updatedFields }: any) => {
+  const onExpertiseSave = ({ updatedFields }: any) => {
     if (updatedFields.length > 0) {
-      await updatedFields.forEach((item: any) => {
+      updatedFields.forEach((item: SkillExpertiseState) => {
         return updateExpertise(item);
       });
     }
     getExpertise();
   };
 
-  const onAchievementSave = async ({ updatedFields }: any) => {
+  const onAchievementSave = ({ updatedFields }: any) => {
     if (updatedFields.length > 0) {
-      await updatedFields.forEach((item: any) => {
+      updatedFields.forEach((item: SkillAchievementState) => {
         return updateAchievement(item);
       });
     }
     getSkillAchievement();
   };
 
-  const addNewSkill = (data: any) =>
+  const addNewSkill = (data: SkillConfigurationState) => {
+    // eslint-disable-next-line
     jwtInterceoptor
       .post('api/SkillConfiguration/CreateSkillConfigurations', {
         skill: data.skill,
@@ -173,22 +278,32 @@ function EmployeeInfo() {
         getSkillsConfiguration();
         showMessage('Skill Configuration Added Successfully', 'success');
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
+  }
 
-  const [skillTypes, setskillTypes] = useState([]);
+  const [skillTypes, setskillTypes] = useState<SkillType[]>([]);
 
-  const getSkillTypeConfig = async () => {
+  const getSkillTypeConfig = () => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceoptor
       .get('api/SkillConfiguration/GetAllSkillTypeDetailList')
-      .then((res: any) => {
+      .then((res: AxiosResponse<SkillType[]>) => {
         setskillTypes(res.data);
       });
   };
 
-  const updateSkill = (data: any) =>
+  const updateSkill = (data: SkillConfigurationState) => {
+    // eslint-disable-next-line
     jwtInterceoptor
       .post('api/SkillConfiguration/UpdateSkillConfiguration', {
         skillConfigurationId: data.id,
@@ -200,11 +315,19 @@ function EmployeeInfo() {
         getSkillsConfiguration();
         showMessage('Skill Configuration Updated Successfully', 'success');
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
+  }
 
-  const deleteSkill = (id: any) =>
+  const deleteSkill = (id: number) => {
     jwtInterceoptor
       .delete(
         `api/SkillConfiguration/DeleteSkillConfiguration?SkillConfigurationId=${id}`
@@ -213,35 +336,45 @@ function EmployeeInfo() {
         getSkillsConfiguration();
         showMessage('Skill Configuration Deleted Successfully', 'success');
       })
-      .catch((err: any) => {
-        showMessage(err.response.data.Message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
+  }
 
-  const onDeleteConfirm = async () => {
-    await deleteSkill(deleteModal.id);
-    getSkillsConfiguration();
-    setDeleteModal({
-      open: false,
-      id: null,
-    });
+  const onDeleteConfirm = () => {
+    if (deleteModal.id !== null) {
+      deleteSkill(deleteModal.id);
+      getSkillsConfiguration();
+      setDeleteModal({
+        open: false,
+        id: null,
+      });
+    }
   };
 
-  const onDelete = (id: any) => {
+  const onDelete = (id: number) => {
     setDeleteModal({
       open: true,
       id: id,
     });
   };
 
-  const onAddNewSkill = async (data: any) => {
+  const onAddNewSkill = (data: SkillConfigurationState) => {
     setNewSkill({
       open: false,
       id: null,
     });
     if (data.id) {
-      await updateSkill(data);
+      updateSkill(data);
     } else {
-      await addNewSkill(data);
+      addNewSkill(data);
     }
     getSkillsConfiguration();
   };
@@ -256,7 +389,7 @@ function EmployeeInfo() {
           <Grid container spacing={2}>
             <Grid item xs={12} md={5}>
               <InfoCards
-                values={skillExpertiseList.map((item: any) => ({
+                values={skillExpertiseList.map((item: SkillExpertise) => ({
                   id: item.skillExpertiseId,
                   value: item.expertise,
                 }))}
@@ -272,7 +405,7 @@ function EmployeeInfo() {
                 twoTier
                 title2='Score Description'
                 title={'Score'}
-                values={skillAchievementList.map((item: any) => ({
+                values={skillAchievementList.map((item: SkillAchievement) => ({
                   id: item.skillAchievementId,
                   value: item.score,
                   title: item.description,
@@ -288,7 +421,7 @@ function EmployeeInfo() {
         </Grid>
         <Grid item xs={12} lg={6.1}>
           <Grid
-            sx={(theme) => ({
+            sx={() => ({
               padding: '5px',
               borderRadius: '10px',
               marginTop: '2px',
@@ -313,7 +446,7 @@ function EmployeeInfo() {
                   label: 'Action',
                 },
               ]}
-              rows={SkillConfiguration.map((item: any) =>
+              rows={SkillConfiguration.map((item: SkillConfiguration) =>
                 createData(
                   item.skill,
                   item.skillType,
@@ -329,12 +462,12 @@ function EmployeeInfo() {
                 minWidth: '100%',
               }}
               loading={tableLoading}
-              onAddClick={() =>
+              onAddClick={() => {
                 setNewSkill({
                   open: true,
                   id: null,
                 })
-              }
+              }}
             />
           </Grid>
           <SkillTypeSetting />
@@ -342,32 +475,41 @@ function EmployeeInfo() {
       </Grid>
       <AddNewSkill
         open={newSkill.open}
-        handleClose={() =>
+        handleClose={() => {
           setNewSkill({
             open: false,
             id: null,
           })
-        }
+        }}
         skillTypes={skillTypes}
         handleSave={onAddNewSkill}
         skillAchievementList={skillAchievementList}
         skill={() => {
           const skill = SkillConfiguration.find(
-            (item: any) => item.skillConfigurationId === newSkill.id
+            (item: SkillConfiguration) => item.skillConfigurationId === newSkill.id
           );
 
+          if (!skill) {
+            return {
+              skill: '',
+              skillType: '',
+              achievementScore: 0,
+              id: null,
+            }
+          }
+
           return {
-            skill: skill?.skill,
-            skillType: skill?.skillType,
-            achievementScore: skill?.requiredSkillAchievementId,
-            id: skill?.skillConfigurationId,
+            skill: skill.skill,
+            skillType: skill.skillType,
+            achievementScore: skill.requiredSkillAchievementId,
+            id: skill.skillConfigurationId,
           };
         }}
       />
       <DeleteModal
         message={'Are you sure you want to delete this skill?'}
         title={'Delete Skill'}
-        onCancel={() => setDeleteModal({ open: false, id: null })}
+        onCancel={() => { setDeleteModal({ open: false, id: null }) }}
         onConfirm={onDeleteConfirm}
         open={deleteModal.open}
       />
