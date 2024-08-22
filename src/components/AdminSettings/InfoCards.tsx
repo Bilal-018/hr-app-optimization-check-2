@@ -120,19 +120,6 @@ const InfoCards = ({
               </Stack>
             );
           })}
-          {!values && loading && (
-            <Typography
-              my={2}
-              sx={{
-                fontSize: '14px',
-                fontWeight: '500',
-                borderBottom: '1px solid #E5E5E5',
-                paddingBottom: '20px',
-              }}
-            >
-              {t('Loading')}...
-            </Typography>
-          )}
         </Stack>
       )}
 
