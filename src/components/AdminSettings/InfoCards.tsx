@@ -1,10 +1,21 @@
 import { Box, CircularProgress, Stack, Typography } from '@mui/material';
-import React from 'react';
 import { useState } from 'react';
 import EditAndSave from '../Global/EditAndSave';
 import EditFieldsModal from '../Global/EditFieldsModal';
 import { useTranslation } from 'react-i18next';
-import { } from 'rsuite';
+
+interface InfoCardsProps {
+  values: any;
+  onSave: any;
+  title: string;
+  loading: boolean;
+  twoTier?: boolean;
+  title2?: string;
+  addAndDelete?: boolean;
+  saveOnTop?: boolean;
+  mainTitle?: string;
+  numberLimit?: number;
+}
 
 const InfoCards = ({
   values,
@@ -17,8 +28,8 @@ const InfoCards = ({
   saveOnTop = false,
   mainTitle = '',
   numberLimit = 0,
-}: any) => {
-  const [open, setOpen] = useState<any>(false);
+}: InfoCardsProps) => {
+  const [open, setOpen] = useState<boolean>(false);
 
   const { t } = useTranslation();
 
@@ -27,12 +38,7 @@ const InfoCards = ({
   };
 
   return (
-    <Box
-      // className='section-border'
-      sx={() => ({
-        // border: `1px solid ${theme.palette.common.black}`,
-      })}
-    >
+    <Box>
       <Stack
         direction='row'
         spacing={2}
@@ -58,52 +64,6 @@ const InfoCards = ({
           />
         )}
       </Stack>
-
-      {/* {saveOnTop && (
-        <Stack
-          direction='row'
-          spacing={2}
-          alignItems='center'
-          justifyContent='space-between'
-          sx={{
-            borderBottom: '1px solid #E5E5E5',
-          }}
-          mb={1}
-          pb={1}
-        >
-          {mainTitle && <span>{t(mainTitle)}</span>}
-          {saveOnTop && (
-            <EditAndSave
-              showConfirm={false}
-              setEdit={() => {
-                setOpen(true);
-              }}
-            />
-          )}
-        </Stack>
-      )} */}
-      {/* <Stack
-        direction='row'
-        spacing={2}
-        alignItems='center'
-        justifyContent='space-between'
-        sx={{
-          borderBottom: '1px solid #E5E5E5',
-        }}
-        mb={1}
-        pb={1}
-      >
-        {twoTier && <span>{t(title2)}</span>}
-        <span>{t(title)}</span>
-        {!saveOnTop && (
-          <EditAndSave
-            showConfirm={false}
-            setEdit={() => {
-              setOpen(true);
-            }}
-          />
-        )}
-      </Stack> */}
 
       {loading ? (
         <Box
@@ -131,7 +91,7 @@ const InfoCards = ({
                 sx={{
                   borderBottom: '1px solid #E5E5E5',
                   paddingBottom: '10px',
-                  columnGap: twoTier && {xl:'20%', lg:'8%', md:'23%', sm:'25%'}
+                  columnGap: twoTier ? {xl:'20%', lg:'8%', md:'23%', sm:'25%'} : ''
                 }}
               >
                 {twoTier && (
