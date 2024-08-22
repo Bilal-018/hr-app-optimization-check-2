@@ -292,9 +292,7 @@ const DepartmentsTable: React.FC = () => {
         open={newDapartment.open}
         handleClose={() => { setNewDapartment({ open: false, id: null }) }}
         handleSave={newDapartment.id ? updateDepartment : addDepartment}
-        department={
-          departments.find((item: Departments) => item.id === newDapartment.id) ?? { department: '', costCenter: '', id: null }
-        }
+        department={departments.find((item: Departments) => item.id === newDapartment.id)}
         title={
           newDapartment.id
             ? 'Update Department information'

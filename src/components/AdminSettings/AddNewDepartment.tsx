@@ -8,7 +8,7 @@ interface Props {
   handleClose: () => void;
   // eslint-disable-next-line
   handleSave: (department: DepartmentState) => void;
-  department: DepartmentState;
+  department: DepartmentState | undefined;
   title: string;
 }
 
@@ -32,7 +32,7 @@ function AddNewDepartment({
   title,
 }: Props) {
   const [newDepartment, setNewDepartment] = useState<DepartmentState>(
-    department.department ? department : initialState
+    department !== undefined && department.department ? department : initialState
   );
   const [error, setError] = useState<{
     department: boolean;
@@ -43,8 +43,10 @@ function AddNewDepartment({
   });
 
   useEffect(() => {
-    if (!department.department) return;
-    setNewDepartment(department);
+    if (department !== undefined) {
+      if (!department.department) return;
+      setNewDepartment(department);
+    }
   }, [department]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

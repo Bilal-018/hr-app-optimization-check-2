@@ -74,7 +74,7 @@ interface AddNewLeaveProps {
   handleClose: () => void;
   // eslint-disable-next-line
   handleSave: (leaveInfo: LeaveTypeState) => void;
-  leave: LeaveTypeState;
+  leave: LeaveTypeState | undefined;
   loading: boolean;
 }
 

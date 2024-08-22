@@ -30,12 +30,12 @@ const headCells = [
 ];
 
 function createData(
-  Leave: any,
-  Limitation: any,
-  Daysentitled: any,
-  id: any,
-  onEdit: any,
-  onDelete: any
+  Leave: string,
+  Limitation: string,
+  Daysentitled: number,
+  id: number,
+  onEdit: (id: number) => void,
+  onDelete: (id: number) => void
 ) {
 
   // Combine all text for searchable text
@@ -50,36 +50,30 @@ function createData(
     Limitation: Limitation ? Limitation : 'N/A',
     Daysentitled: <CircularChip value={Daysentitled} />,
     Action: (
-      <CellAction onEdit={() => onEdit(id)} onDelete={() => onDelete(id)} />
+      <CellAction onEdit={() => { onEdit(id) }} id={id} onDelete={() => { onDelete(id) }} />
     ),
     searchableText,
   };
 }
 
-// function Status({ status }: any) {
-//   return (
-//     <Box
-//       sx={{
-//         display: 'flex',
-//         gap: '5px',
-//         alignItems: 'center',
-//       }}
-//     >
-//       <Circle color={status === 'Active' ? 'success' : 'error'} />
-//       <Typography className='smallBodyBold'>{status}</Typography>
-//     </Box>
-//   );
-// }
-function CellAction({ onEdit, id, onDelete }: any) {
+interface CellActionProps {
+  // eslint-disable-next-line
+  onEdit: (id: number) => void;
+  // eslint-disable-next-line
+  onDelete: (id: number) => void;
+  id: number;
+}
+
+function CellAction({ onEdit, id, onDelete }: CellActionProps) {
   return (
     <Box className='action-icon-rounded'>
       <Button
-        onClick={() => onEdit(id)}
+        onClick={() => { onEdit(id) }}
       >
         <EditIcon />
       </Button>
       <Button
-        onClick={() => onDelete(id)}
+        onClick={() => { onDelete(id) }}
       >
         <BinIcon />
       </Button>
@@ -87,15 +81,35 @@ function CellAction({ onEdit, id, onDelete }: any) {
   );
 }
 
+interface ModalState {
+  open: boolean;
+  id: number | null;
+}
+
+interface LeaveTypeState {
+  leaveTypeId?: number;
+  leaveType: string;
+  daysEntitled: number;
+  genderRestriction: string;
+  leaveCategoryId: number | null;
+  contractTypeId: number[];
+  genderRestrictionId: number[],
+}
+
+interface Snackbar {
+  // eslint-disable-next-line
+  showMessage: (message: string, variant: 'error' | 'success' | 'info' | 'warning') => void;
+}
+
 function Assets() {
-  const [open, setOpen] = useState<any>({
+  const [open, setOpen] = useState<ModalState>({
     open: false,
     id: null,
   });
-  const [loading, setLoading] = useState<any>(false);
-  const { showMessage }: any = useSnackbar();
-  const [leaveConfig, setLeaveConfig] = useState<any>([]);
-  const [deleteModal, setDeleteModal] = useState<any>({
+  const [loading, setLoading] = useState<boolean>(false);
+  const { showMessage }: Snackbar = useSnackbar() as Snackbar;
+  const [leaveConfig, setLeaveConfig] = useState<LeaveTypeState[]>([]);
+  const [deleteModal, setDeleteModal] = useState<ModalState>({
     open: false,
     id: null,
   });
@@ -108,46 +122,60 @@ function Assets() {
         setLeaveConfig(res.data);
         setLoading(false);
       })
-      .catch((err) => {
-        showMessage(err.message, 'error');
+      .catch((err: unknown) => {
+        if (err instanceof Error) {
+          showMessage(err.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
   };
 
-  const onEdit = (id: any) => {
+  const onEdit = (id: number) => {
     setOpen({
       open: true,
       id: id,
     });
   };
 
-  const onDelete = (id: any) => {
+  const onDelete = (id: number) => {
     setDeleteModal({
       open: true,
       id: id,
     });
   };
 
-  const updateLeaveConfig = async (data: any) =>
+  const updateLeaveConfig = (data: LeaveTypeState) => {
     jwtLeave
       .post('api/LeaveConfiguration/UpdateLeaveConfiguration', data)
       .then(() => {
         showMessage('Leave configuration updated successfully', 'success');
       })
-      .catch((err) => {
-        showMessage(err.message, 'error');
+      .catch((err: unknown) => {
+        if (err instanceof Error) {
+          showMessage(err.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       }).finally(() => { setLoading(false) });
+  }
 
-  const createMewLeaveConfig = async (data: any) =>
+  const createMewLeaveConfig = (data: LeaveTypeState) => {
     jwtLeave
       .post('api/LeaveConfiguration/CreateLeaveConfiguration', data)
       .then(() => {
         showMessage('Leave configuration created successfully', 'success');
       })
-      .catch((err) => {
-        showMessage(err.message, 'error');
+      .catch((err: unknown) => {
+        if (err instanceof Error) {
+          showMessage(err.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       }).finally(() => { setLoading(false) });
+  }
 
-  const deleteLeaveConfig = async (id: any) =>
+  const deleteLeaveConfig = async (id: number) => {
     jwtLeave
       .delete(
         `api/LeaveConfiguration/DeleteLeaveConfiguration?leaveTypeId=${id}`
@@ -155,25 +183,32 @@ function Assets() {
       .then(() => {
         showMessage('Leave configuration deleted successfully', 'success');
       })
-      .catch((err) => {
-        showMessage(err.message, 'error');
+      .catch((err: unknown) => {
+        if (err instanceof Error) {
+          showMessage(err.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
+  }
 
-  const onDeleteConfirm = async () => {
-    await deleteLeaveConfig(deleteModal.id);
-    getLeaveConfig();
-    setDeleteModal({
-      open: false,
-      id: null,
-    });
+  const onDeleteConfirm = () => {
+    if (deleteModal.id !== null) {
+      deleteLeaveConfig(deleteModal.id);
+      getLeaveConfig();
+      setDeleteModal({
+        open: false,
+        id: null,
+      });
+    }
   };
 
-  const onSave = async (data: any) => {
+  const onSave = (data: LeaveTypeState) => {
     setLoading(true);
     if (data.leaveTypeId) {
-      await updateLeaveConfig(data);
+      updateLeaveConfig(data);
     } else {
-      await createMewLeaveConfig(data);
+      createMewLeaveConfig(data);
     }
 
     getLeaveConfig();
@@ -186,7 +221,6 @@ function Assets() {
 
   React.useEffect(() => {
     getLeaveConfig();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -211,23 +245,23 @@ function Assets() {
         >
           <EnhancedTable
             head={headCells}
-            rows={leaveConfig.map((item: any) =>
+            rows={leaveConfig.map((item: LeaveTypeState) =>
               createData(
                 item.leaveType,
                 item.genderRestriction,
                 item.daysEntitled,
-                item.leaveTypeId,
+                item.leaveTypeId ?? 0,
                 onEdit,
                 onDelete
               )
             )}
             isAddable={true}
-            onAddClick={() =>
+            onAddClick={() => {
               setOpen({
                 open: true,
                 id: null,
               })
-            }
+            }}
             title='Leave Configuration'
             loading={loading}
             btnTitle='Edit'
@@ -246,7 +280,7 @@ function Assets() {
           });
         }}
         handleSave={onSave}
-        leave={leaveConfig.find((item: any) => item.leaveTypeId === open.id)}
+        leave={leaveConfig.find((item: LeaveTypeState) => item.leaveTypeId === open.id)}
         loading={loading}
       />
       <DeleteModal
