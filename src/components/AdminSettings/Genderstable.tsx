@@ -29,12 +29,12 @@ function CellAction({ onEdit, id, onDelete }: CellActionProps) {
   return (
     <Box className='action-icon-rounded'>
       <Button
-        onClick={() => onEdit(id)}
+        onClick={() => { onEdit(id) }}
       >
         <EditIcon />
       </Button>
       <Button
-        onClick={() => onDelete(id)}
+        onClick={() => { onDelete(id) }}
       >
         <BinIcon />
       </Button>
