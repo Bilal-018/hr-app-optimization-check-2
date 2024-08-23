@@ -109,6 +109,14 @@ interface SkillType {
   skillType: string;
 }
 
+interface OnExpertiseSaveParams {
+  updatedFields: SkillExpertiseState[];
+}
+
+interface OnAchievementSaveParams {
+  updatedFields: SkillAchievementState[];
+}
+
 function EmployeeInfo() {
   const [newSkill, setNewSkill] = useState<ModalState>({
     open: false,
@@ -250,22 +258,20 @@ function EmployeeInfo() {
     getSkillTypeConfig();
   }, []);
 
-  const onExpertiseSave = ({ updatedFields }: any) => {
+  const onExpertiseSave = ({ updatedFields }: OnExpertiseSaveParams) => {
     if (updatedFields.length > 0) {
-      updatedFields.forEach((item: SkillExpertiseState) => {
-        return updateExpertise(item);
+      Promise.all(updatedFields.map(updateExpertise)).then(() => {
+        getExpertise();
       });
     }
-    getExpertise();
   };
 
-  const onAchievementSave = ({ updatedFields }: any) => {
+  const onAchievementSave = ({ updatedFields }: OnAchievementSaveParams) => {
     if (updatedFields.length > 0) {
-      updatedFields.forEach((item: SkillAchievementState) => {
-        return updateAchievement(item);
+      Promise.all(updatedFields.map(updateAchievement)).then(() => {
+        getSkillAchievement();
       });
     }
-    getSkillAchievement();
   };
 
   const addNewSkill = (data: SkillConfigurationState) => {
