@@ -79,7 +79,7 @@ function SkillTypeSetting() {
 
   const { t } = useTranslation();
 
-  const onSave = async () => {
+  const onSave = () => {
     try {
       const { skillType } = skillTypeInfo;
 
@@ -93,9 +93,9 @@ function SkillTypeSetting() {
         skillType: false,
       });
       if (open.isEditMode && open.id) {
-        await addOrUpdateSkillType(skillType, open.id);
+        addOrUpdateSkillType(skillType, open.id);
       } else {
-        await addOrUpdateSkillType(skillType, null);
+        addOrUpdateSkillType(skillType, null);
       }
       setSkillTypeInfo(initialState);
       setOpen({ open: false, id: null, isEditMode: false });
@@ -271,7 +271,7 @@ function SkillTypeSetting() {
     );
   }
 
-  const onEdit = (rowData: any) => {
+  const onEdit = (rowData: SkillConfig) => {
     setOpen({
       open: true,
       id: rowData.skillTypeDetailId,
