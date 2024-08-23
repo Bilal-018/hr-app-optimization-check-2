@@ -13,26 +13,44 @@ import BinIcon from '../Icon/BinIcon';
 
 const initialState = {
   skillType: '',
-  errors: [],
 };
 
+interface SkillTypeInfo {
+  skillType: string;
+}
+
+interface ModalState {
+  open: boolean;
+  id: number | null;
+  isEditMode?: boolean;
+}
+
+interface ErrorState {
+  skillType: boolean;
+}
+
+interface Snackbar {
+  // eslint-disable-next-line
+  showMessage: (message: string, variant: 'error' | 'success' | 'info' | 'warning') => void;
+}
+
 function SkillTypeSetting() {
-  const [open, setOpen] = useState<any>({
+  const [open, setOpen] = useState<ModalState>({
     open: false,
     id: null,
   });
 
-  const [errors, setErrors] = useState<any>({
+  const [errors, setErrors] = useState<ErrorState>({
     skillType: false,
   });
 
-  const { showMessage }: any = useSnackbar();
+  const { showMessage }: Snackbar = useSnackbar() as Snackbar;
 
-  const [skillTypeInfo, setSkillTypeInfo] = useState<any>(initialState);
+  const [skillTypeInfo, setSkillTypeInfo] = useState<SkillTypeInfo>(initialState);
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setSkillTypeInfo((prev: any) => ({
+    setSkillTypeInfo((prev: SkillTypeInfo) => ({
       ...prev,
       [name]: value,
     }));
@@ -53,7 +71,6 @@ function SkillTypeSetting() {
       setErrors({
         skillType: false,
       });
-      //   const data = { skillType, skillTypeDetailId: open.id };
       if (open.isEditMode && open.id) {
         await addOrUpdateSkillType(skillType, open.id);
       } else {
@@ -66,7 +83,7 @@ function SkillTypeSetting() {
     }
   };
 
-  const validate = (values: any) => {
+  const validate = (values: SkillTypeInfo) => {
     let errors = {
       skillType: false,
     };
@@ -95,7 +112,7 @@ function SkillTypeSetting() {
     },
   ];
 
-  const [loading, setLoading] = useState<any>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [skillConfig, setSkillConfig] = useState<any>([]);
 
   useEffect(() => {
