@@ -262,6 +262,8 @@ function EmployeeInfo() {
     if (updatedFields.length > 0) {
       Promise.all(updatedFields.map(updateExpertise)).then(() => {
         getExpertise();
+      }).catch((error: unknown) => {
+        console.error('Failed to update expertise:', error);
       });
     }
   };
@@ -270,6 +272,8 @@ function EmployeeInfo() {
     if (updatedFields.length > 0) {
       Promise.all(updatedFields.map(updateAchievement)).then(() => {
         getSkillAchievement();
+      }).catch((error: unknown) => {
+        console.error('Failed to update achievement:', error);
       });
     }
   };
