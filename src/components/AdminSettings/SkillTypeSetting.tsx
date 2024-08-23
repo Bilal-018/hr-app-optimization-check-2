@@ -23,7 +23,7 @@ interface SkillTypeInfo {
 interface ModalState {
   open: boolean;
   id: number | null;
-  isEditMode?: boolean;
+  isEditMode: boolean;
 }
 
 interface ErrorState {
@@ -59,6 +59,7 @@ function SkillTypeSetting() {
   const [open, setOpen] = useState<ModalState>({
     open: false,
     id: null,
+    isEditMode: false
   });
 
   const [errors, setErrors] = useState<ErrorState>({
@@ -320,6 +321,7 @@ function SkillTypeSetting() {
             setOpen({
               open: true,
               id: null,
+              isEditMode: false
             })
           }}
           loading={loading}
