@@ -23,6 +23,7 @@ interface SkillAchievementState {
 
 interface InfoCardsProps {
   values: Configuration[] | SkillExpertiseState[] | SkillAchievementState[];
+  // eslint-disable-next-line
   onSave: any;
   title: string;
   loading: boolean;
