@@ -31,6 +31,23 @@ interface ConfigSaveProps {
   removedFields: Configuration[];
 }
 
+interface SkillExpertiseState {
+  id: number;
+  value: string;
+}
+
+interface SkillAchievementState {
+  id: number;
+  title: string;
+  value: number;
+}
+
+interface onSaveParams {
+  updatedFields: Configuration[] | SkillExpertiseState[] | SkillAchievementState[];
+  newFields?: Configuration[] | SkillExpertiseState[] | SkillAchievementState[];
+  removedFields?: Configuration[] | SkillExpertiseState[] | SkillAchievementState[];
+}
+
 const EmployeeInfo: React.FC = () => {
   const [configData, setConfigData] = useState<Configuration[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -118,7 +135,7 @@ const EmployeeInfo: React.FC = () => {
     // eslint-disable-next-line
     jwtInterceoptor
       .delete(`api/ConfigurationValues/Delete?key=${data.title}`)
-      .then(() => {
+      .then((res: any) => {
         GetAllConfigurationValue();
         showMessage('Deleted Configuration data', 'success');
       })
@@ -187,9 +204,9 @@ const EmployeeInfo: React.FC = () => {
           <DepartmentsTable />
           <InfoCards
             twoTier
-            title2={t('Key')}
+            title2={t('Key').toString()}
             values={configData}
-            onSave={onConfigSave}
+            onSave={(params: onSaveParams) => { onConfigSave(params as { updatedFields: Configuration[]; newFields: Configuration[]; removedFields: Configuration[]; }) }}
             title={t('Value')}
             saveOnTop
             mainTitle='Configuration Values'

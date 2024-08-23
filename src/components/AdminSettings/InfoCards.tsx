@@ -21,10 +21,16 @@ interface SkillAchievementState {
   value: number;
 }
 
+interface onSaveParams {
+  updatedFields: Configuration[] | SkillExpertiseState[] | SkillAchievementState[];
+  newFields?: Configuration[] | SkillExpertiseState[] | SkillAchievementState[];
+  removedFields?: Configuration[] | SkillExpertiseState[] | SkillAchievementState[];
+}
+
 interface InfoCardsProps {
   values: Configuration[] | SkillExpertiseState[] | SkillAchievementState[];
   // eslint-disable-next-line
-  onSave: any;
+  onSave: (params: onSaveParams) => void;
   title: string;
   loading: boolean;
   twoTier?: boolean;

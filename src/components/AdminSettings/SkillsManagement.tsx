@@ -1,5 +1,5 @@
 import { Box, Button, Grid } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import EnhancedTable from '../Global/Table';
 import { CircularChip } from '../Global/Chips';
 import AddNewSkill from './AddNewSkill';
@@ -117,7 +117,19 @@ interface OnAchievementSaveParams {
   updatedFields: SkillAchievementState[];
 }
 
-function EmployeeInfo() {
+interface Configuration {
+  id: number;
+  title: string;
+  value: string;
+}
+
+interface onSaveParams {
+  updatedFields: Configuration[] | SkillExpertiseState[] | SkillAchievementState[];
+  newFields?: Configuration[] | SkillExpertiseState[] | SkillAchievementState[];
+  removedFields?: Configuration[] | SkillExpertiseState[] | SkillAchievementState[];
+}
+
+function SkillsManagement() {
   const [newSkill, setNewSkill] = useState<ModalState>({
     open: false,
     id: null,
@@ -205,9 +217,9 @@ function EmployeeInfo() {
       });
   }
 
-  const updateAchievement = (data: SkillAchievementState) => {
+  const updateAchievement = async (data: SkillAchievementState) => {
     // eslint-disable-next-line
-    jwtInterceoptor
+    return jwtInterceoptor
       .post('api/SkillConfiguration/UpdateSkillAchievement', {
         skillAchievementId: data.id,
         score: data.value,
@@ -215,7 +227,6 @@ function EmployeeInfo() {
       })
       .then(() => {
         showMessage('Skill Achievement Updated Successfully', 'success');
-        getSkillAchievement();
       })
       .catch((error: unknown) => {
         if (error instanceof AxiosError && error.response) {
@@ -229,9 +240,9 @@ function EmployeeInfo() {
       });
   }
 
-  const updateExpertise = (data: SkillExpertiseState) => {
+  const updateExpertise = async (data: SkillExpertiseState) => {
     // eslint-disable-next-line
-    jwtInterceoptor
+    return jwtInterceoptor
       .post('api/SkillConfiguration/UpdateSkillExpertise', {
         skillExpertiseId: data.id,
         expertise: data.value,
@@ -407,7 +418,7 @@ function EmployeeInfo() {
                 }))}
                 title={'Expertise'}
                 loading={loading}
-                onSave={onExpertiseSave}
+                onSave={(params: onSaveParams) => { onExpertiseSave(params as { updatedFields: SkillExpertiseState[]; }) }}
                 addAndDelete={false}
                 saveOnTop={true}
               />
@@ -423,7 +434,7 @@ function EmployeeInfo() {
                   title: item.description,
                 }))}
                 addAndDelete={false}
-                onSave={onAchievementSave}
+                onSave={(params: onSaveParams) => { onAchievementSave(params as { updatedFields: SkillAchievementState[]; }) }}
                 loading={loading}
                 numberLimit={5}
                 saveOnTop={true}
@@ -529,4 +540,4 @@ function EmployeeInfo() {
   );
 }
 
-export default EmployeeInfo;
+export default SkillsManagement;
