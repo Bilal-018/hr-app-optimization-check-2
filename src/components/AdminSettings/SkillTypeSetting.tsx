@@ -328,7 +328,7 @@ function SkillTypeSetting() {
         />
         <BaseModal
           title={
-            open?.isEditMode
+            open.isEditMode
               ? t('Admin - Update Skill Type')
               : t('Admin - New Skill Type')
           }
