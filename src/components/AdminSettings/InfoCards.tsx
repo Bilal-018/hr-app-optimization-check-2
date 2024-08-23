@@ -100,7 +100,7 @@ const InfoCards = ({
             mr: twoTier && !saveOnTop ? 15 : '0px',
           }}
         >
-          {values.map((value) => {
+          {values.map((value: Configuration | SkillExpertiseState | SkillAchievementState) => {
             if ('title' in value) {
               return (
                 <Stack
