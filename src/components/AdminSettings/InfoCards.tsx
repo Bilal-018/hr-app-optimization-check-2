@@ -4,8 +4,25 @@ import EditAndSave from '../Global/EditAndSave';
 import EditFieldsModal from '../Global/EditFieldsModal';
 import { useTranslation } from 'react-i18next';
 
+interface Configuration {
+  id: number;
+  title: string;
+  value: string;
+}
+
+interface SkillExpertiseState {
+  id: number;
+  value: string;
+}
+
+interface SkillAchievementState {
+  id: number;
+  title: string;
+  value: number;
+}
+
 interface InfoCardsProps {
-  values: any;
+  values: Configuration[] | SkillExpertiseState[] | SkillAchievementState[];
   onSave: any;
   title: string;
   loading: boolean;
@@ -83,42 +100,67 @@ const InfoCards = ({
             mr: twoTier && !saveOnTop ? 15 : '0px',
           }}
         >
-          {values.map((value: any) => {
-            return (
-              <Stack
-                direction={twoTier ? 'row' : 'column'}
-                spacing={2}
-                sx={{
-                  borderBottom: '1px solid #E5E5E5',
-                  paddingBottom: '10px',
-                  columnGap: twoTier ? {xl:'20%', lg:'8%', md:'23%', sm:'25%'} : ''
-                }}
-              >
-                {twoTier && (
+          {values.map((value) => {
+            if ('title' in value) {
+              return (
+                <Stack
+                  direction={twoTier ? 'row' : 'column'}
+                  spacing={2}
+                  sx={{
+                    borderBottom: '1px solid #E5E5E5',
+                    paddingBottom: '10px',
+                    columnGap: twoTier ? { xl: '20%', lg: '8%', md: '23%', sm: '25%' } : ''
+                  }}
+                >
+                  {twoTier && (
+                    <Typography
+                      key={value.id}
+                      my={2}
+                      sx={{
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        width: '132px'
+                      }}
+                    >
+                      {t(value.title)}
+                    </Typography>
+                  )}
                   <Typography
                     key={value.id}
                     my={2}
                     sx={{
                       fontSize: '14px',
                       fontWeight: '500',
-                      width: '132px'
                     }}
                   >
-                    {t(value.title)}
+                    {t(value.value.toString())}
                   </Typography>
-                )}
-                <Typography
-                  key={value.id}
-                  my={2}
+                </Stack>
+              );
+            } else {
+              return (
+                <Stack
+                  direction={twoTier ? 'row' : 'column'}
+                  spacing={2}
                   sx={{
-                    fontSize: '14px',
-                    fontWeight: '500',
+                    borderBottom: '1px solid #E5E5E5',
+                    paddingBottom: '10px',
+                    columnGap: twoTier ? { xl: '20%', lg: '8%', md: '23%', sm: '25%' } : ''
                   }}
                 >
-                  {t(value.value)}
-                </Typography>
-              </Stack>
-            );
+                  <Typography
+                    key={value.id}
+                    my={2}
+                    sx={{
+                      fontSize: '14px',
+                      fontWeight: '500',
+                    }}
+                  >
+                    {t(value.value)}
+                  </Typography>
+                </Stack>
+              );
+            }
           })}
         </Stack>
       )}
