@@ -23,7 +23,7 @@ interface SkillTypeInfo {
 interface ModalState {
   open: boolean;
   id: number | null;
-  isEditMode: boolean;
+  isEditMode?: boolean;
 }
 
 interface ErrorState {
@@ -321,14 +321,13 @@ function SkillTypeSetting() {
             setOpen({
               open: true,
               id: null,
-              isEditMode: false
             })
           }}
           loading={loading}
         />
         <BaseModal
           title={
-            open.isEditMode
+            open.isEditMode ?? false
               ? t('Admin - Update Skill Type')
               : t('Admin - New Skill Type')
           }
