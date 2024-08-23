@@ -135,7 +135,7 @@ const EmployeeInfo: React.FC = () => {
     // eslint-disable-next-line
     jwtInterceoptor
       .delete(`api/ConfigurationValues/Delete?key=${data.title}`)
-      .then((res: any) => {
+      .then(() => {
         GetAllConfigurationValue();
         showMessage('Deleted Configuration data', 'success');
       })
