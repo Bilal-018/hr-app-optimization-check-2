@@ -10,6 +10,7 @@ import { useSnackbar } from '../Global/WithSnackbar';
 import DeleteModal from '../Global/DeleteModal';
 import EditIcon from '../Icon/EditIcon';
 import BinIcon from '../Icon/BinIcon';
+import { AxiosResponse } from 'axios';
 
 const initialState = {
   skillType: '',
@@ -32,6 +33,26 @@ interface ErrorState {
 interface Snackbar {
   // eslint-disable-next-line
   showMessage: (message: string, variant: 'error' | 'success' | 'info' | 'warning') => void;
+}
+
+interface SkillConfig {
+  skillTypeDetailId: number;
+  skillType: string;
+}
+
+interface SkillTypeDetailResponse {
+  StatusCode?: string;
+  Message?: string;
+}
+
+interface DeleteModalState {
+  open: boolean;
+  id: number | null;
+}
+
+interface CellActionProps {
+  onEdit: () => void;
+  onDelete: () => void;
 }
 
 function SkillTypeSetting() {
@@ -113,7 +134,7 @@ function SkillTypeSetting() {
   ];
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [skillConfig, setSkillConfig] = useState<any>([]);
+  const [skillConfig, setSkillConfig] = useState<SkillConfig[]>([]);
 
   useEffect(() => {
     getSkillTypeConfig();
@@ -121,50 +142,52 @@ function SkillTypeSetting() {
 
   const getSkillTypeConfig = () => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceoptor
       .get('api/SkillConfiguration/GetAllSkillTypeDetailList')
 
-      .then((res: any) => {
-        console.log(res.data);
+      .then((res: AxiosResponse<SkillConfig[]>) => {
         setSkillConfig(res.data);
         setLoading(false);
       })
-      .catch((err: any) => { console.log("error is: ", err) });
+      .catch((err: unknown) => { console.log("error is: ", err) });
   };
 
-  const addOrUpdateSkillType = async (
-    skillType: any,
-    skillTypeDetailId: any
+  const addOrUpdateSkillType = (
+    skillType: string,
+    skillTypeDetailId: number | null
   ) => {
     setLoading(true);
     try {
       if (skillTypeDetailId) {
-        await jwtInterceoptor
+        // eslint-disable-next-line
+        jwtInterceoptor
           .post('api/SkillConfiguration/UpdateSkillTypeDetail', {
             skillTypeDetailId,
             skillType,
           })
-          .then((res: any) => {
+          .then((res: AxiosResponse<SkillTypeDetailResponse>) => {
             if (
               res.data.StatusCode != undefined &&
               res.data.StatusCode !== '200'
             ) {
-              showMessage(res.data.Message, 'error');
+              showMessage(res.data.Message ?? 'An error occurred.', 'error');
             } else {
               showMessage('Skill Type Updated Successfully!', 'success');
             }
           });
       } else {
-        await jwtInterceoptor
+        // eslint-disable-next-line
+        jwtInterceoptor
           .post('api/SkillConfiguration/CreateSkillTypeDetail', {
             skillType,
           })
-          .then((res: any) => {
+          .then((res: AxiosResponse<SkillTypeDetailResponse>) => {
             if (
               res.data.StatusCode != undefined &&
               res.data.StatusCode !== '200'
             ) {
-              showMessage(res.data.Message, 'error');
+              showMessage(res.data.Message ?? 'An error occurred.', 'error');
             } else {
               showMessage(t('Skill Type Added Successfully!'), 'success');
             }
@@ -172,26 +195,27 @@ function SkillTypeSetting() {
       }
 
       getSkillTypeConfig();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error saving Skill Type:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = () => {
     try {
       setLoading(true);
-      await jwtInterceoptor
+      // eslint-disable-next-line
+      jwtInterceoptor
         .delete(
           `api/SkillConfiguration/DeleteSkillTypeDetail?skillTypeDetailId=${deleteModal.id}`
         )
-        .then((res: any) => {
+        .then((res: AxiosResponse<SkillTypeDetailResponse>) => {
           if (
             res.data.StatusCode != undefined &&
             res.data.StatusCode !== '200'
           ) {
-            showMessage(res.data.Message, 'error');
+            showMessage(res.data.Message ?? 'An error occurred.', 'error');
           } else {
             showMessage(t('Skill Type deleted successfully!'), 'success');
           }
@@ -201,7 +225,7 @@ function SkillTypeSetting() {
         open: false,
         id: null,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error deleting Skill Type:', error);
     } finally {
       setLoading(false);
@@ -209,11 +233,13 @@ function SkillTypeSetting() {
   };
 
   function createData(
-    SkillType: any,
-    id: any,
-    onEdit: any,
-    onDelete: any,
-    rowData: any
+    SkillType: string,
+    id: number,
+    // eslint-disable-next-line
+    onEdit: (rowData: SkillConfig) => void,
+    // eslint-disable-next-line
+    onDelete: (id: number) => void,
+    rowData: SkillConfig
   ) {
     return {
       SkillType,
@@ -221,14 +247,14 @@ function SkillTypeSetting() {
       nullHeader1: null,
       Action: (
         <CellAction
-          onEdit={() => onEdit(rowData)}
-          onDelete={() => onDelete(id)}
+          onEdit={() => { onEdit(rowData) }}
+          onDelete={() => { onDelete(id) }}
         />
       ),
     };
   }
 
-  function CellAction({ onEdit, onDelete }: any) {
+  function CellAction({ onEdit, onDelete }: CellActionProps) {
     return (
       <Box className='action-icon-rounded'>
         <Button
@@ -256,14 +282,14 @@ function SkillTypeSetting() {
     });
   };
 
-  const onDelete = (id: any) => {
+  const onDelete = (id: number) => {
     setDeleteModal({
       open: true,
       id: id,
     });
   };
 
-  const [deleteModal, setDeleteModal] = useState({
+  const [deleteModal, setDeleteModal] = useState<DeleteModalState>({
     open: false,
     id: null,
   });
@@ -271,7 +297,7 @@ function SkillTypeSetting() {
   return (
     <>
       <Grid
-        sx={(theme) => ({
+        sx={() => ({
           padding: '5px',
           borderRadius: '10px',
           marginTop: '10px',
@@ -279,7 +305,7 @@ function SkillTypeSetting() {
       >
         <EnhancedTable
           head={headCells}
-          rows={skillConfig.map((item: any) =>
+          rows={skillConfig.map((item: SkillConfig) =>
             createData(
               item.skillType,
               item.skillTypeDetailId,
@@ -290,13 +316,12 @@ function SkillTypeSetting() {
           )}
           btnTitle='Add New'
           isAddable={true}
-          onAddClick={() =>
+          onAddClick={() => {
             setOpen({
               open: true,
               id: null,
             })
-          }
-          // title="Bank holiday setting"
+          }}
           loading={loading}
         />
         <BaseModal
@@ -319,7 +344,7 @@ function SkillTypeSetting() {
           onSave={onSave}
           open={open.open}
           skillTypeData={skillConfig.find(
-            (item: any) => item.skillTypeDetailId === open.id
+            (item: SkillConfig) => item.skillTypeDetailId === open.id
           )}
         >
           <Grid item xs={12}>
