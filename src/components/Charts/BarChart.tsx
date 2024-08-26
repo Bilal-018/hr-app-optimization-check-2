@@ -24,20 +24,20 @@ const BarChart: React.FC<Props> = ({ leaves, isMonthlyLeaves }) => {
 
   useEffect(() => {
     const typedLeaves = leaves as Leaves;
-    const months = typedLeaves?.sickLeaves?.map((item) => {
+    const months = typedLeaves.sickLeaves?.map((item: LeavesData) => {
       if (isMonthlyLeaves === true) {
-        return item?.month + ' ' + item?.year;
+        return item.month + ' ' + item.year;
       } else {
-        return item?.year;
+        return item.year;
       }
     });
 
-    const sickLeaves = leaves?.sickLeaves?.map((item) => {
-      return Number(item?.value);
+    const sickLeaves = typedLeaves.sickLeaves?.map((item: LeavesData) => {
+      return Number(item.value);
     });
 
-    const annualLeaves = leaves?.annualLeaves?.map((item) => {
-      return Number(item?.value);
+    const annualLeaves = typedLeaves.annualLeaves?.map((item: LeavesData) => {
+      return Number(item.value);
     });
 
     const ctx = chartRef.current?.getContext('2d');
