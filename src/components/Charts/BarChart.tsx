@@ -7,11 +7,13 @@ interface LeavesData {
   value: string;
 }
 
+interface Leaves {
+  sickLeaves: LeavesData[];
+  annualLeaves: LeavesData[];
+}
+
 interface Props {
-  leaves: {
-    sickLeaves: LeavesData[];
-    annualLeaves: LeavesData[];
-  };
+  leaves: Leaves;
   isMonthlyLeaves: boolean;
   width: number;
 }
