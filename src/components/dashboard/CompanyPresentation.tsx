@@ -1,22 +1,27 @@
 import { Button, Grid, Stack, Typography } from '@mui/material';
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import CompanySlides from './CompanySlides';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from '../Global/WithSnackbar';
 import jwtInterceptor from '../../services/interceptors';
 import { Link } from 'react-router-dom';
+import { AxiosError } from 'axios';
 
 interface Presentation {
   id: number;
   description: string;
-  // Add more fields if necessary
+}
+
+interface Snackbar {
+  // eslint-disable-next-line
+  showMessage: (message: string, variant: 'error' | 'success' | 'info' | 'warning') => void;
 }
 
 function CompanyPresentation(): JSX.Element {
   const { t } = useTranslation();
   const [presentation, setPresentation] = useState<Presentation[]>([]);
   const initialized = useRef(false);
-  const { showMessage }: any = useSnackbar();
+  const { showMessage }: Snackbar = useSnackbar() as Snackbar;
   const bearerToken = sessionStorage.getItem('token_key');
   const [currentSlide, setCurrentSlide] = useState<number>(0);
 
@@ -31,17 +36,24 @@ function CompanyPresentation(): JSX.Element {
         window.location.href = base_url + '/login';
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getCompanyPresentationData = async () => {
     try {
+      // eslint-disable-next-line
       const response = await jwtInterceptor.get(
         'api/PresentationDetail/GetDetailsForPresentationPage'
       );
       setPresentation(response.data);
-    } catch (error: any) {
-      showMessage(error.message, 'error');
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && error.response) {
+        const errorMessage = error.response.data as { Message: string };
+        showMessage(errorMessage.Message, 'error');
+      } else if (error instanceof Error) {
+        showMessage(error.message, 'error');
+      } else {
+        showMessage('An unknown error occurred', 'error');
+      }
     }
   };
 
@@ -51,7 +63,6 @@ function CompanyPresentation(): JSX.Element {
       spacing={1}
       sx={() => ({
         padding: '20px',
-        // backgroundColor: theme.palette.background.paper,
         borderRadius: '20px',
       })}
     >
