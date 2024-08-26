@@ -28,7 +28,7 @@ interface LeavesProps {
 interface Response {
   leaves: Leave[];
   payroll: Payroll[];
-  goal: Goal[];
+  goal: any;
 }
 
 interface Leave {
@@ -41,10 +41,6 @@ interface Payroll {
   identityId: number;
   date: string;
   notifications: Notification[];
-}
-
-interface Goal {
-  // add properties for Goal objects if needed
 }
 
 interface Notification {
@@ -132,7 +128,7 @@ function NotificationsPanel() {
         setLeaveNotifications(<Leaves NOTIFICATIONS={allLeaves} />);
         setPayslipsNotifications(<Leaves NOTIFICATIONS={allPayslips} />);
       })
-      .finally(() => { });
+      .finally(() => { console.log("Got Notifications List") });
   };
 
   useEffect(() => {
