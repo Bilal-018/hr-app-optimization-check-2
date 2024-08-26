@@ -28,7 +28,7 @@ interface LeavesProps {
 interface Response {
   leaves: Leave[];
   payroll: Payroll[];
-  goal: any;
+  goal: unknown;
 }
 
 interface Leave {
