@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useSnackbar } from '../Global/WithSnackbar';
 import jwtInterceptor from '../../services/interceptors';
 import { Link } from 'react-router-dom';
-import { AxiosError } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 
 interface Presentation {
   id: number;
@@ -41,7 +41,7 @@ function CompanyPresentation(): JSX.Element {
   const getCompanyPresentationData = async () => {
     try {
       // eslint-disable-next-line
-      const response = await jwtInterceptor.get(
+      const response: AxiosResponse<Presentation[]> = await jwtInterceptor.get(
         'api/PresentationDetail/GetDetailsForPresentationPage'
       );
       setPresentation(response.data);
