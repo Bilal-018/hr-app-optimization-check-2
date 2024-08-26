@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box, Typography } from '@mui/material';
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   PopoverItem,
   PopoverItemInfoContainer,
@@ -9,6 +8,7 @@ import BasicTabs from '../Global/BasicTabs';
 import { RedMailIcon } from '../../assets/images';
 import jwtInterceptor from '../../services/interceptors';
 import { useTranslation } from 'react-i18next';
+import { AxiosResponse } from 'axios';
 
 interface NotificationOption {
   id: number;
@@ -21,14 +21,41 @@ interface NotificationItem {
   notifications: NotificationOption[];
 }
 
-// interface NotificationData {
-//   goal: NotificationItem[];
-//   leaves: NotificationItem[];
-//   payroll: NotificationItem[];
-// }
-
 interface LeavesProps {
   NOTIFICATIONS: NotificationItem[];
+}
+
+interface Response {
+  leaves: Leave[];
+  payroll: Payroll[];
+  goal: Goal[];
+}
+
+interface Leave {
+  identityId: number;
+  date: string;
+  notifications: Notification[];
+}
+
+interface Payroll {
+  identityId: number;
+  date: string;
+  notifications: Notification[];
+}
+
+interface Goal {
+  // add properties for Goal objects if needed
+}
+
+interface Notification {
+  id: number;
+  title: string;
+  description: string;
+  url: string;
+  transactionId: number | null;
+  toWhom: string | null;
+  notificationType: string | null;
+  modifiedDate: string | null;
 }
 
 function Leaves({ NOTIFICATIONS }: LeavesProps) {
@@ -44,11 +71,11 @@ function Leaves({ NOTIFICATIONS }: LeavesProps) {
 
   return (
     <>
-      {NOTIFICATIONS.map((item: any) => (
+      {NOTIFICATIONS.map((item: NotificationItem) => (
         <Box key={item.id}>
           <Typography className='extraSmallBody'>{t(item.date)}</Typography>
           <Box>
-            {item.notifications.map((option: any) => (
+            {item.notifications.map((option: NotificationOption) => (
               <PopoverItem
                 key={option.id}
                 sx={(theme) => ({
@@ -75,48 +102,37 @@ function Leaves({ NOTIFICATIONS }: LeavesProps) {
 function NotificationsPanel() {
   const bearerToken = sessionStorage.getItem('token_key');
   const empId = sessionStorage.getItem('empId_key');
-  const [goalsNotifications, setGoalsNotifications] =
-    useState<JSX.Element | null>(null);
   const [leaveNotifications, setLeaveNotifications] =
     useState<JSX.Element | null>(null);
   const [payslipsNotifications, setPayslipsNotifications] =
     useState<JSX.Element | null>(null);
-  const [loading, setLoading] = useState(false);
   const initialized = useRef(false);
   const base_url = process.env.REACT_APP_BASE_URL;
 
   const GetEmployeeNotifications = () => {
-    setLoading(true);
-
+    // eslint-disable-next-line
     jwtInterceptor
       .get(
         'api/EmployeeNotification/GetNotificationListByEmployeeDetailID?EmployeeDetailId=' +
           empId
       )
-      .then((response: any) => {
-        const allGoals = response.data.goal.map((x: any) => ({
-          id: x.id,
+      .then((response: AxiosResponse<Response>) => {
+        const allLeaves = response.data.leaves.map((x: Leave) => ({
+          id: x.identityId,
           date: x.date,
           notifications: x.notifications,
         }));
 
-        const allLeaves = response.data.leaves.map((x: any) => ({
-          id: x.id,
+        const allPayslips = response.data.payroll.map((x: Payroll) => ({
+          id: x.identityId,
           date: x.date,
           notifications: x.notifications,
         }));
 
-        const allPayslips = response.data.payroll.map((x: any) => ({
-          id: x.id,
-          date: x.date,
-          notifications: x.notifications,
-        }));
-
-        setGoalsNotifications(<Leaves NOTIFICATIONS={allGoals} />);
         setLeaveNotifications(<Leaves NOTIFICATIONS={allLeaves} />);
         setPayslipsNotifications(<Leaves NOTIFICATIONS={allPayslips} />);
       })
-      .finally(() => { setLoading(false) });
+      .finally(() => { });
   };
 
   useEffect(() => {
@@ -128,7 +144,6 @@ function NotificationsPanel() {
         window.location.href = base_url + '/login';
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
