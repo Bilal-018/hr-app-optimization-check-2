@@ -1,13 +1,6 @@
 import { ResponsivePie, MayHaveLabel } from '@nivo/pie';
 import React from 'react';
 
-// interface DataItem {
-//   id: string | number;
-//   value: number;
-//   label: string;
-//   color: string;
-// }
-
 interface Props {
   data: MayHaveLabel[];
 }
