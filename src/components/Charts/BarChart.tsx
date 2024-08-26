@@ -45,7 +45,7 @@ const BarChart: React.FC<Props> = ({ leaves, isMonthlyLeaves }) => {
       chartInstance?.destroy();
     }
 
-    const newChartInstance = new Chart(ctx, {
+    const newChartInstance: Chart = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: months,
@@ -82,8 +82,6 @@ const BarChart: React.FC<Props> = ({ leaves, isMonthlyLeaves }) => {
     return () => {
       newChartInstance.destroy();
     };
-    // }, [leaves, isMonthlyLeaves, chartInstance]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leaves, isMonthlyLeaves]);
 
   return <canvas ref={chartRef} />;
