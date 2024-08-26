@@ -23,7 +23,8 @@ const BarChart: React.FC<Props> = ({ leaves, isMonthlyLeaves }) => {
   const [chartInstance, setChartInstance] = useState<Chart | null>(null);
 
   useEffect(() => {
-    const months = leaves?.sickLeaves?.map((item) => {
+    const typedLeaves = leaves as Leaves;
+    const months = typedLeaves?.sickLeaves?.map((item) => {
       if (isMonthlyLeaves === true) {
         return item?.month + ' ' + item?.year;
       } else {
