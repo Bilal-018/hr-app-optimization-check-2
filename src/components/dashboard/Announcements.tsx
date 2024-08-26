@@ -1,13 +1,13 @@
 import { Box, Stack, Typography } from '@mui/material';
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import AnnouncementIcon from '@mui/icons-material/Announcement';
 import CircularIcon from '../Global/CircularIcon';
 import { useTranslation } from 'react-i18next';
 import jwtInterceptor from '../../services/interceptors';
+import { AxiosResponse } from 'axios';
 
 interface AnnouncementData {
   description: string;
-  // Add other properties as needed
 }
 
 function Announcements() {
@@ -27,12 +27,12 @@ function Announcements() {
         window.location.href = base_url + '/login';
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getAnnouncementData = async () => {
     try {
-      const response = await jwtInterceptor.get(
+      // eslint-disable-next-line
+      const response: AxiosResponse<AnnouncementData[]> = await jwtInterceptor.get(
         'api/Anouncement/GetActiveAnnouncement'
       );
       setAnnouncement(response.data);
@@ -46,7 +46,6 @@ function Announcements() {
       <Box
         sx={() => ({
           borderRadius: '20px',
-          // background: theme.palette.background.backLessOps,
           p: '15px',
         })}
       >
