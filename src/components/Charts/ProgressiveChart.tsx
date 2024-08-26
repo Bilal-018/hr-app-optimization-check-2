@@ -7,7 +7,7 @@ interface SummaryItem {
 }
 
 interface Props {
-  summary: SummaryItem[];
+  summary: SummaryItem[] | [];
 }
 
 const ProgressiveChart: React.FC<Props> = ({ summary }) => {
