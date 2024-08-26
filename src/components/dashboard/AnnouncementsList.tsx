@@ -13,6 +13,7 @@ import EditIcon from '../Icon/EditIcon';
 import BinIcon from '../Icon/BinIcon';
 import CircleIcon from "@mui/icons-material/Circle";
 import CalendarIcon from '../Icon/CalenderIcon';
+import { Axios, AxiosResponse } from 'axios';
 
 interface Announcement {
   title?: string;
@@ -20,6 +21,7 @@ interface Announcement {
   expiryDate?: Date;
   isVisibleToUser?: boolean;
   anouncementId?: number;
+  startDate?: Date;
 }
 
 interface RowData {
@@ -58,10 +60,10 @@ function extractTextFromElement(element: React.ReactElement): string {
 }
 
 function createData(
-  title: string,
-  description: string,
-  expiryDate: any,
-  visible: any,
+  title: string | undefined,
+  description: string | undefined,
+  expiryDate: JSX.Element,
+  visible: JSX.Element,
   action: JSX.Element,
 ): RowData {
 
@@ -71,6 +73,9 @@ function createData(
     extractTextFromElement(expiryDate),
     extractTextFromElement(visible),
   ].join(' ');
+
+  if (title === undefined) title = '';
+  if (description === undefined) description = '';
 
   return {
     title,
@@ -101,21 +106,27 @@ function CellAction({
   );
 }
 
+interface Snackbar {
+  // eslint-disable-next-line
+  showMessage: (message: string, variant: 'error' | 'success' | 'info' | 'warning') => void;
+}
+
 function AnnouncementsList(): JSX.Element {
   const [addEditModal, setAddEditModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [selected, setSelected] = useState<Announcement | null>(null);
-  const { showMessage }: any = useSnackbar();
+  const { showMessage }: Snackbar = useSnackbar() as Snackbar;
   const { t } = useTranslation();
 
   const getAllAnnouncements = (): void => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceptor
       .get('api/Anouncement/GetAllAnnouncement')
-      .then((response: any) => {
-        const rows = response.data.map((row: any) =>
+      .then((response: AxiosResponse<Announcement[]>) => {
+        const rows = response.data.map((row: Announcement) =>
           createData(
             row.title,
             row.description,
@@ -138,13 +149,14 @@ function AnnouncementsList(): JSX.Element {
         setRowData(rows);
         setLoading(false);
       })
-      .catch((error: any) => {
+      .catch((error: { message: string }) => {
         showMessage(error.message, 'error');
       });
   };
 
   const createNewAnnouncement = (data: Announcement) => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceptor
       .post('api/Anouncement/AddAnouncement', {
         title: data.title,
@@ -157,13 +169,14 @@ function AnnouncementsList(): JSX.Element {
         showMessage('Announcement created successfully', 'success');
         setLoading(false);
       })
-      .catch((error: { message: any }) => {
+      .catch((error: { message: string }) => {
         showMessage(error.message, 'error');
       });
   };
 
   const updateAnnouncement = (data: Announcement) => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceptor
       .post('api/Anouncement/UpdateAnouncement', {
         anouncementId: data.anouncementId,
@@ -177,13 +190,14 @@ function AnnouncementsList(): JSX.Element {
         showMessage('Announcement updated successfully', 'success');
         setLoading(false);
       })
-      .catch((error: { message: any }) => {
+      .catch((error: { message: string }) => {
         showMessage(error.message, 'error');
       });
   };
 
   const deleteAnnouncement = (id: number) => {
     setLoading(true);
+    // eslint-disable-next-line
     jwtInterceptor
       .delete(`api/Anouncement/DeleteAnouncement?AnouncementId=${id}`)
       .then(() => {
@@ -193,14 +207,13 @@ function AnnouncementsList(): JSX.Element {
         setLoading(false);
         setSelected(null);
       })
-      .catch((error: { message: any }) => {
+      .catch((error: { message: string }) => {
         showMessage(error.message, 'error');
       });
   };
 
   useEffect(() => {
     getAllAnnouncements();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onEdit = (row: Announcement) => {
@@ -340,8 +353,8 @@ function AnnouncementsList(): JSX.Element {
         open={deleteModal}
         message='Would you like to delete the selected announcement ?'
         title='Delete Announcement'
-        onCancel={() => setDeleteModal(false)}
-        onConfirm={() => deleteAnnouncement(selected?.anouncementId || 0)}
+        onCancel={() => { setDeleteModal(false) }}
+        onConfirm={() => { deleteAnnouncement(selected?.anouncementId || 0) }}
       />
     </Box>
   );
