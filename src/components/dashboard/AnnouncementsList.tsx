@@ -381,7 +381,7 @@ function AnnouncementsList(): JSX.Element {
         message='Would you like to delete the selected announcement ?'
         title='Delete Announcement'
         onCancel={() => { setDeleteModal(false) }}
-        onConfirm={() => { deleteAnnouncement(selected?.anouncementId || 0) }}
+        onConfirm={() => { deleteAnnouncement(selected?.anouncementId ?? 0) }}
       />
     </Box>
   );
