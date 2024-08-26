@@ -25,10 +25,11 @@ interface Announcement {
 }
 
 interface RowData {
+  id?: number;
   title: string;
   description: string;
-  expiryDate: any;
-  visible: any;
+  expiryDate: JSX.Element;
+  visible: JSX.Element;
   action: JSX.Element;
   searchableText: string;
 }
@@ -149,8 +150,15 @@ function AnnouncementsList(): JSX.Element {
         setRowData(rows);
         setLoading(false);
       })
-      .catch((error: { message: string }) => {
-        showMessage(error.message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
   };
 
@@ -162,7 +170,7 @@ function AnnouncementsList(): JSX.Element {
         title: data.title,
         description: data.description,
         expiryDate: data.expiryDate,
-        isVisibleToUser: data.isVisibleToUser || false,
+        isVisibleToUser: data.isVisibleToUser ?? false,
       })
       .then(() => {
         getAllAnnouncements();
@@ -271,21 +279,23 @@ function AnnouncementsList(): JSX.Element {
           setSelected(null);
         }}
         onSave={() => {
-          if (!selected || !selected.title || !selected.expiryDate || !selected.description) {
+          if (!selected?.title || !selected.expiryDate || !selected.description) {
             showMessage('Please fill in all required fields', 'error');
             return;
           }
           setAddEditModal(false);
-          if (selected?.anouncementId && selected?.anouncementId !== 0) {
+          if (selected.anouncementId && selected.anouncementId !== 0) {
             const index = rowData.findIndex(
-              (row: any) => row.id === selected.anouncementId
+              (row: RowData) => row.id === selected.anouncementId
             );
             const temp: any = [...rowData];
             temp[index] = selected;
             setRowData(temp);
             updateAnnouncement(selected);
           } else {
-            selected !== null && createNewAnnouncement(selected);
+            if (selected !== null) {
+              createNewAnnouncement(selected);
+            }
           }
           setSelected(null);
         }}
@@ -296,8 +306,8 @@ function AnnouncementsList(): JSX.Element {
             <TextField
               variant='outlined'
               name='title'
-              placeholder={t('Enter Title') ?? 'Enter Title'}
-              value={selected?.title || ''}
+              placeholder={t('Enter Title').toString()}
+              value={selected?.title ?? ''}
               onChange={(e: any) => {
                 setSelected({
                   ...selected,
@@ -313,7 +323,6 @@ function AnnouncementsList(): JSX.Element {
             <Typography variant='body2'>{t('Expiration date')}</Typography>
             <LocalizationProvider
               dateAdapter={AdapterDayjs}
-            // locale={i18n.language}
             >
               <DatePicker
                 slots={{
@@ -326,7 +335,7 @@ function AnnouncementsList(): JSX.Element {
                 onChange={(newValue: any) => {
                   setSelected({
                     ...selected,
-                    expiryDate: newValue && newValue.toDate(),
+                    expiryDate: newValue?.toDate(),
                   });
                 }}
               />
@@ -337,13 +346,10 @@ function AnnouncementsList(): JSX.Element {
             <TextField
               variant='outlined'
               name='description'
-              placeholder={
-                t('Enter announcements description') ??
-                'Enter announcements description'
-              }
+              placeholder={t('Enter announcements description').toString()}
               multiline
               rows={4}
-              value={selected?.description || ''}
+              value={selected?.description ?? ''}
               onChange={(e) => {
                 setSelected({
                   ...selected,
@@ -358,7 +364,7 @@ function AnnouncementsList(): JSX.Element {
           <Grid item xs={12}>
             <Typography variant='body2'>{t('Visible to users')}</Typography>
             <Switch
-              checked={selected?.isVisibleToUser || false}
+              checked={selected?.isVisibleToUser ?? false}
               onChange={(e) => {
                 setSelected({
                   ...selected,
