@@ -13,7 +13,7 @@ import EditIcon from '../Icon/EditIcon';
 import BinIcon from '../Icon/BinIcon';
 import CircleIcon from "@mui/icons-material/Circle";
 import CalendarIcon from '../Icon/CalenderIcon';
-import { Axios, AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 
 interface Announcement {
   title?: string;
@@ -169,8 +169,15 @@ function AnnouncementsList(): JSX.Element {
         showMessage('Announcement created successfully', 'success');
         setLoading(false);
       })
-      .catch((error: { message: string }) => {
-        showMessage(error.message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
   };
 
@@ -190,8 +197,15 @@ function AnnouncementsList(): JSX.Element {
         showMessage('Announcement updated successfully', 'success');
         setLoading(false);
       })
-      .catch((error: { message: string }) => {
-        showMessage(error.message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
   };
 
@@ -207,8 +221,15 @@ function AnnouncementsList(): JSX.Element {
         setLoading(false);
         setSelected(null);
       })
-      .catch((error: { message: string }) => {
-        showMessage(error.message, 'error');
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data as { Message: string };
+          showMessage(errorMessage.Message, 'error');
+        } else if (error instanceof Error) {
+          showMessage(error.message, 'error');
+        } else {
+          showMessage('An unknown error occurred', 'error');
+        }
       });
   };
 
