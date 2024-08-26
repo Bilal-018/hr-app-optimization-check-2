@@ -1,6 +1,6 @@
-import { Box } from '@mui/material';
-import React from 'react';
-const Center = (BoxProps: any) => {
+import { Box, BoxProps } from '@mui/material';
+
+const Center = (BoxProps: BoxProps) => {
   const { sx, ...rest } = BoxProps;
   return (
     <Box
