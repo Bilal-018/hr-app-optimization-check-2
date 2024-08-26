@@ -295,6 +295,8 @@ function SkillTypeSetting() {
     id: null,
   });
 
+  const titleModal = open.isEditMode ? t('Admin - Update Skill Type') : t('Admin - New Skill Type');
+
   return (
     <>
       <Grid
@@ -327,11 +329,7 @@ function SkillTypeSetting() {
           loading={loading}
         />
         <BaseModal
-          title={
-            open.isEditMode
-              ? t('Admin - Update Skill Type')
-              : t('Admin - New Skill Type')
-          }
+          title={titleModal}
           handleClose={() => {
             setOpen({
               open: false,
