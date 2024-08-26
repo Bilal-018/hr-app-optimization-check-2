@@ -7,14 +7,14 @@ interface SummaryItem {
 }
 
 interface Props {
-  summary: SummaryItem[] | [];
+  summary: SummaryItem[];
 }
 
 const ProgressiveChart: React.FC<Props> = ({ summary }) => {
   const [chartData, setChartData] = useState<{ x: number; y: number }[]>([]);
 
   useEffect(() => {
-    if (summary && summary.length > 0) {
+    if (Array.isArray(summary) && summary.length > 0) {
       const newData = summary.map((item: SummaryItem) => ({
         x: parseInt(item.year),
         y: parseFloat(item.value.replace('%', '')),
